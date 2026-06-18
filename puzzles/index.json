@@ -1,0 +1,18 @@
+[
+  {
+    "id": "cache01",
+    "title": {
+      "ca": "Escac i Mat en 1",
+      "es": "Jaque Mate en 1",
+      "en": "Checkmate in 1"
+    }
+  },
+  {
+    "id": "cache02",
+    "title": {
+      "ca": "Escac i Mat Ofegat",
+      "es": "Jaque Mate Ahogado",
+      "en": "Smothered Mate"
+    }
+  }
+]
