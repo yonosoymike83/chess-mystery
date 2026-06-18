@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Chess Mystery Cache</title>
+
+<style>
+
+body{
+    background:#111;
+    color:white;
+    font-family:Arial,sans-serif;
+    text-align:center;
+}
+
+.container{
+    max-width:800px;
+    margin:auto;
+    padding:20px;
+}
+
+.puzzle{
+    display:block;
+    background:#222;
+    color:white;
+    text-decoration:none;
+    padding:15px;
+    margin:12px 0;
+    border-radius:10px;
+    font-size:1.2rem;
+}
+
+.puzzle:hover{
+    background:#333;
+}
+
+#language-selector{
+    margin-bottom:20px;
+}
+
+#language-selector button{
+    margin:0 4px;
+    padding:6px 12px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>♟️ Chess Mystery Cache</h1>
+
+<div id="language-selector">
+
+<button onclick="setLanguage('ca')">
+CAT
+</button>
+
+<button onclick="setLanguage('es')">
+ESP
+</button>
+
+<button onclick="setLanguage('en')">
+ENG
+</button>
+
+</div>
+
+<div id="list">
+Cargando...
+</div>
+
+</div>
+
+<script>
+
+let language =
+    localStorage.getItem("language");
+
+if(!language){
+
+    const browserLang =
+        navigator.language.toLowerCase();
+
+    if(browserLang.startsWith("ca")){
+
+        language="ca";
+
+    }else if(browserLang.startsWith("en")){
+
+        language="en";
+
+    }else{
+
+        language="es";
+    }
+}
+
+function setLanguage(lang){
+
+    localStorage.setItem(
+        "language",
+        lang
+    );
+
+    location.reload();
+}
+
+async function loadList(){
+
+    const puzzles =
+        await (
+            await fetch(
+                "puzzles/index.json"
+            )
+        ).json();
+
+    const container =
+        document.getElementById(
+            "list"
+        );
+
+    container.innerHTML = "";
+
+    puzzles.forEach(puzzle => {
+
+        const link =
+            document.createElement("a");
+
+        link.className =
+            "puzzle";
+
+        link.href =
+            `play.html?p=${puzzle.id}`;
+
+        link.textContent =
+            puzzle.title[language];
+
+        container.appendChild(
+            link
+        );
+    });
+}
+
+loadList();
+
+</script>
+
+</body>
+</html>
