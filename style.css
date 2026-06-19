@@ -53,7 +53,7 @@ button:hover{
     display:flex;
     justify-content:center;
     align-items:center;
-    gap:10px;
+    gap:8px;
     margin:10px 0 20px;
 }
 
@@ -62,13 +62,14 @@ button:hover{
     padding:6px 12px;
     font-size:.9rem;
     font-weight:bold;
+    min-width:58px;
 }
 
 /* Botón inicio */
 
 .home-button{
-    width:42px;
-    height:42px;
+    width:58px;
+    height:35px;
 
     display:flex;
     align-items:center;
@@ -81,12 +82,13 @@ button:hover{
 
     border-radius:8px;
 
-    font-size:28px;
+    font-size:.9rem;
     font-weight:bold;
+    line-height:1;
 
     transition:.2s;
 }
 
 .home-button:hover{
-    transform:scale(1.05);
+    opacity:.9;
 }
