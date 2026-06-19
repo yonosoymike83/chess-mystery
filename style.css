@@ -47,46 +47,46 @@ button:hover{
     opacity:.9;
 }
 
-#language-selector{
+/* Barra superior */
+
+#top-bar{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
     margin:10px 0 20px;
 }
 
-#language-selector button{
-    margin:0 4px;
+#top-bar button{
+    margin:0;
     padding:6px 12px;
     font-size:.9rem;
     font-weight:bold;
 }
 
-/* Botón volver al índice */
+/* Botón inicio */
 
-.back-button{
-    position:fixed;
-    top:15px;
-    left:15px;
-
-    width:44px;
-    height:44px;
+.home-button{
+    width:42px;
+    height:42px;
 
     display:flex;
     align-items:center;
     justify-content:center;
 
-    background:#222;
-    color:white;
+    background:white;
+    color:black;
 
     text-decoration:none;
 
-    border-radius:50%;
+    border-radius:8px;
 
-    font-size:22px;
+    font-size:28px;
+    font-weight:bold;
 
-    z-index:1000;
-
-    transition:0.2s;
+    transition:.2s;
 }
 
-.back-button:hover{
-    background:#333;
+.home-button:hover{
     transform:scale(1.05);
 }
