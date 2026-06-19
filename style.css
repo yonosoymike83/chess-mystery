@@ -47,8 +47,6 @@ button:hover{
     opacity:.9;
 }
 
-/* Barra superior */
-
 #top-bar{
     display:flex;
     justify-content:center;
@@ -63,33 +61,4 @@ button:hover{
     font-size:.9rem;
     font-weight:bold;
     min-width:58px;
-}
-
-/* Botón volver */
-
-.home-button{
-    width:58px;
-    height:35px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    background:white;
-    color:black;
-
-    text-decoration:none;
-
-    border-radius:8px;
-
-    font-size:1rem;
-    font-weight:bold;
-
-    line-height:1;
-
-    transition:.2s;
-}
-
-.home-button:hover{
-    opacity:.9;
 }
