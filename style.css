@@ -14,7 +14,7 @@ body{
 
 #board{
     width:min(90vw,640px);
-    margin:20px auto;
+    margin:20px auto 10px auto;
 }
 
 #status{
@@ -27,7 +27,7 @@ body{
 }
 
 #success{
-    margin-top:20px;
+    margin-top:5px;
 }
 
 #coordinates{
