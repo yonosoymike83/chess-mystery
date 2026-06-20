@@ -327,13 +327,14 @@ document.getElementById(
 
 function copyCoords() {
 
-navigator.clipboard.writeText(
+    navigator.clipboard.writeText(
+        document.getElementById(
+            "coordinates"
+        ).innerText.trim()
+    );
 
-"${puzzle.coordinates.lat} ${puzzle.coordinates.lon}"
-);
-
-alert(
-    t("copied")
+    alert(
+        t("copied")
 );
 
 }
