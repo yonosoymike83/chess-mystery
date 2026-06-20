@@ -3,8 +3,7 @@ let board;
 let game;
 let currentStep = 0;
 
-let language =
-localStorage.getItem("language");
+let language = localStorage.getItem("language");
 
 if (!language) {
 
@@ -80,49 +79,47 @@ async function loadPuzzle() {
 
 ```
 const id =
-    new URLSearchParams(location.search)
-    .get("p") || "cache01";
+    new URLSearchParams(
+        location.search
+    ).get("p") || "cache01";
+
+const response =
+    await fetch(
+        `puzzles/${id}.json`
+    );
 
 puzzle =
-    await (
-        await fetch(
-            `puzzles/${id}.json`
-        )
-    ).json();
+    await response.json();
 
-document.getElementById("title")
-    .textContent =
+document.getElementById(
+    "title"
+).textContent =
     puzzle.title[language];
 
-document.getElementById("description")
-    .textContent =
+document.getElementById(
+    "description"
+).textContent =
     puzzle.description[language];
 
-document.getElementById("status")
-    .style.display =
-    "block";
-
-document.getElementById("status")
-    .textContent =
+document.getElementById(
+    "status"
+).textContent =
     t("pending");
 
-const solvedTitle =
-    document.querySelector("#success h2");
-
-if (solvedTitle) {
-
-    solvedTitle.textContent =
-        t("solvedTitle");
-}
+document.querySelector(
+    "#success h2"
+).textContent =
+    t("solvedTitle");
 
 document.getElementById(
     "copyBtn"
 ).textContent =
     t("copyButton");
 
-game = new Chess(
-    puzzle.fen
-);
+game =
+    new Chess(
+        puzzle.fen
+    );
 
 await customElements.whenDefined(
     "chess-board"
@@ -133,9 +130,8 @@ board =
         "board"
     );
 
-board.setPosition(
-    game.fen()
-);
+board.position =
+    game.fen();
 
 board.draggablePieces = true;
 
@@ -145,7 +141,9 @@ board.addEventListener(
 );
 
 document
-    .getElementById("copyBtn")
+    .getElementById(
+        "copyBtn"
+    )
     .addEventListener(
         "click",
         copyCoords
@@ -159,15 +157,13 @@ function resetBoard() {
 ```
 currentStep = 0;
 
-game = new Chess(
-    puzzle.fen
-);
+game =
+    new Chess(
+        puzzle.fen
+    );
 
-board.setPosition(
-    game.fen()
-);
-
-board.draggablePieces = true;
+board.position =
+    game.fen();
 
 document.getElementById(
     "status"
@@ -193,8 +189,8 @@ const to =
 
 const move =
     game.move({
-        from: from,
-        to: to,
+        from,
+        to,
         promotion: "q"
     });
 
@@ -202,9 +198,8 @@ if (!move) {
 
     setTimeout(() => {
 
-        board.setPosition(
-            game.fen()
-        );
+        board.position =
+            game.fen();
 
     }, 10);
 
@@ -214,7 +209,9 @@ if (!move) {
 if (puzzle.moves) {
 
     const expectedMove =
-        puzzle.moves[currentStep];
+        puzzle.moves[
+            currentStep
+        ];
 
     if (
         move.san !==
@@ -236,9 +233,8 @@ if (puzzle.moves) {
 
     currentStep++;
 
-    board.setPosition(
-        game.fen()
-    );
+    board.position =
+        game.fen();
 
     if (
         currentStep >=
@@ -251,7 +247,9 @@ if (puzzle.moves) {
     }
 
     const reply =
-        puzzle.moves[currentStep];
+        puzzle.moves[
+            currentStep
+        ];
 
     setTimeout(() => {
 
@@ -259,9 +257,8 @@ if (puzzle.moves) {
             reply
         );
 
-        board.setPosition(
-            game.fen()
-        );
+        board.position =
+            game.fen();
 
         currentStep++;
 
@@ -279,6 +276,7 @@ if (puzzle.moves) {
 }
 
 const solved =
+
     typeof puzzle.solution ===
     "string"
 
@@ -361,4 +359,5 @@ setTimeout(() => {
 
 }
 
-window.onload = loadPuzzle;
+window.onload =
+loadPuzzle;
