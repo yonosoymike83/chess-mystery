@@ -317,9 +317,7 @@ document.getElementById(
     "coordinates"
 ).innerHTML = `
     <p>
-        ${puzzle.coordinates.lat}
-        &nbsp;&nbsp;&nbsp;
-        ${puzzle.coordinates.lon}
+        ${puzzle.coordinates.lat} ${puzzle.coordinates.lon}
     </p>
 `;
 
