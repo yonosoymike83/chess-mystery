@@ -74,3 +74,12 @@ button:hover{
     font-size:1.1rem !important;
     font-weight:900 !important;
 }
+
+/* Botón copiar coordenadas */
+
+#copyBtn{
+    padding:6px 12px;
+    font-size:.9rem;
+    font-weight:bold;
+    min-height:35px;
+}
