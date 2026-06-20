@@ -47,6 +47,8 @@ button:hover{
     opacity:.9;
 }
 
+/* Barra superior */
+
 #top-bar{
     display:flex;
     justify-content:center;
@@ -56,9 +58,19 @@ button:hover{
 }
 
 #top-bar button{
+    width:58px;
+    height:35px;
+
     margin:0;
-    padding:6px 12px;
+    padding:0;
+
     font-size:.9rem;
     font-weight:bold;
-    min-width:58px;
+}
+
+/* Botón volver */
+
+.back-btn{
+    font-size:1.1rem !important;
+    font-weight:900 !important;
 }
