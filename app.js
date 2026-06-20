@@ -316,8 +316,11 @@ document.getElementById(
 document.getElementById(
     "coordinates"
 ).innerHTML = `
-    <p>${puzzle.coordinates.lat}</p>
-    <p>${puzzle.coordinates.lon}</p>
+    <p>
+        ${puzzle.coordinates.lat}
+        &nbsp;&nbsp;&nbsp;
+        ${puzzle.coordinates.lon}
+    </p>
 `;
 
 }
