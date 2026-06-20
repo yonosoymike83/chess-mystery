@@ -121,6 +121,9 @@ board =
         "board"
     );
 
+/* IMPORTANTE:
+   Para tu versión de chessboard-element
+   la carga inicial debe hacerse así */
 board.setAttribute(
     "position",
     game.fen()
@@ -153,8 +156,7 @@ game =
         puzzle.fen
     );
 
-board.setAttribute(
-    "position",
+board.setPosition(
     game.fen()
 );
 
@@ -189,8 +191,7 @@ if (!move) {
 
     setTimeout(() => {
 
-        board.setAttribute(
-            "position",
+        board.setPosition(
             game.fen()
         );
 
@@ -224,8 +225,7 @@ if (puzzle.moves) {
 
     currentStep++;
 
-    board.setAttribute(
-        "position",
+    board.setPosition(
         game.fen()
     );
 
@@ -248,8 +248,7 @@ if (puzzle.moves) {
             reply
         );
 
-        board.setAttribute(
-            "position",
+        board.setPosition(
             game.fen()
         );
 
