@@ -3,7 +3,8 @@ let board;
 let game;
 let currentStep = 0;
 
-let language = localStorage.getItem("language");
+let language =
+localStorage.getItem("language");
 
 if (!language) {
 
@@ -70,31 +71,30 @@ location.reload();
 async function loadPuzzle() {
 
 const id =
-    new URLSearchParams(
-        location.search
-    ).get("p") || "cache01";
-
-const response =
-    await fetch(
-        `puzzles/${id}.json`
-    );
+    new URLSearchParams(location.search)
+    .get("p") || "cache01";
 
 puzzle =
-    await response.json();
+    await (
+        await fetch(
+            `puzzles/${id}.json`
+        )
+    ).json();
 
-document.getElementById(
-    "title"
-).textContent =
+document.getElementById("title")
+    .textContent =
     puzzle.title[language];
 
-document.getElementById(
-    "description"
-).textContent =
+document.getElementById("description")
+    .textContent =
     puzzle.description[language];
 
-document.getElementById(
-    "status"
-).textContent =
+document.getElementById("status")
+    .style.display =
+    "block";
+
+document.getElementById("status")
+    .textContent =
     t("pending");
 
 document.querySelector(
@@ -121,8 +121,10 @@ board =
         "board"
     );
 
-board.position =
-    game.fen();
+board.setAttribute(
+    "position",
+    game.fen()
+);
 
 board.draggablePieces = true;
 
@@ -151,8 +153,10 @@ game =
         puzzle.fen
     );
 
-board.position =
-    game.fen();
+board.setAttribute(
+    "position",
+    game.fen()
+);
 
 document.getElementById(
     "status"
@@ -176,8 +180,8 @@ const to =
 
 const move =
     game.move({
-        from,
-        to,
+        from: from,
+        to: to,
         promotion: "q"
     });
 
@@ -185,8 +189,10 @@ if (!move) {
 
     setTimeout(() => {
 
-        board.position =
-            game.fen();
+        board.setAttribute(
+            "position",
+            game.fen()
+        );
 
     }, 10);
 
@@ -196,9 +202,7 @@ if (!move) {
 if (puzzle.moves) {
 
     const expectedMove =
-        puzzle.moves[
-            currentStep
-        ];
+        puzzle.moves[currentStep];
 
     if (
         move.san !==
@@ -220,8 +224,10 @@ if (puzzle.moves) {
 
     currentStep++;
 
-    board.position =
-        game.fen();
+    board.setAttribute(
+        "position",
+        game.fen()
+    );
 
     if (
         currentStep >=
@@ -234,9 +240,7 @@ if (puzzle.moves) {
     }
 
     const reply =
-        puzzle.moves[
-            currentStep
-        ];
+        puzzle.moves[currentStep];
 
     setTimeout(() => {
 
@@ -244,8 +248,10 @@ if (puzzle.moves) {
             reply
         );
 
-        board.position =
-            game.fen();
+        board.setAttribute(
+            "position",
+            game.fen()
+        );
 
         currentStep++;
 
