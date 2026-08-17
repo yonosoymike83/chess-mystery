@@ -4,73 +4,295 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
 <title>Chess Mystery Cache</title>
 
 <style>
 
+/* ======================================================
+   CHESS MYSTERY
+   ====================================================== */
+
 body{
+
     background:#111;
+
     color:white;
-    font-family:Arial,sans-serif;
+
+    font-family:
+        Arial,
+        sans-serif;
+
     text-align:center;
+
     margin:0;
+
 }
+
+
+/* ======================================================
+   CONTENEDOR NORMAL
+   ====================================================== */
 
 .container{
+
     max-width:800px;
+
     margin:auto;
+
     padding:20px;
+
 }
+
 
 .logo{
+
     width:250px;
+
     max-width:90%;
+
     margin-bottom:10px;
+
 }
+
 
 h1{
+
     margin-top:0;
+
     margin-bottom:20px;
+
 }
+
 
 #language-selector{
+
     margin-bottom:25px;
+
 }
+
 
 #language-selector button{
+
     margin:0 4px;
+
     padding:8px 16px;
+
     font-weight:bold;
+
     border:none;
+
     border-radius:8px;
+
     cursor:pointer;
+
 }
+
 
 .puzzle{
+
     display:block;
+
     background:#222;
+
     color:white;
+
     text-decoration:none;
+
     padding:15px;
+
     margin:12px 0;
+
     border-radius:10px;
+
     font-size:1.1rem;
+
     transition:0.2s;
+
 }
 
+
 .puzzle:hover{
+
     background:#333;
+
+}
+
+
+/* ======================================================
+   DARK CACHE
+   ====================================================== */
+
+body.darkcache-mode{
+
+    background:#111;
+
+    overflow:hidden;
+
+}
+
+
+body.darkcache-mode .container{
+
+    width:100%;
+
+    max-width:none;
+
+    height:100vh;
+
+    padding:0;
+
+    margin:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    box-sizing:border-box;
+
+}
+
+
+/* ======================================================
+   OCULTAR ELEMENTOS INNECESARIOS
+   ====================================================== */
+
+body.darkcache-mode .logo{
+
+    display:none;
+
+}
+
+
+body.darkcache-mode h1{
+
+    font-family:
+        'Silkscreen',
+        monospace;
+
+    font-size:1.2rem;
+
+    margin:0 0 15px 0;
+
+}
+
+
+body.darkcache-mode #language-selector{
+
+    margin-bottom:15px;
+
+}
+
+
+body.darkcache-mode #language-selector button{
+
+    padding:5px 8px;
+
+    font-size:.65rem;
+
+}
+
+
+body.darkcache-mode #list{
+
+    width:90%;
+
+    max-width:400px;
+
+}
+
+
+/* ======================================================
+   PUZZLES EN DARK CACHE
+   ====================================================== */
+
+body.darkcache-mode .puzzle{
+
+    padding:9px;
+
+    margin:7px 0;
+
+    border-radius:4px;
+
+    font-size:.8rem;
+
+}
+
+
+/* ======================================================
+   MÓVIL
+   ====================================================== */
+
+@media(max-width:700px){
+
+    body.darkcache-mode h1{
+
+        font-size:1rem;
+
+    }
+
+
+    body.darkcache-mode #list{
+
+        width:85%;
+
+    }
+
+}
+
+
+/* ======================================================
+   PANTALLA MUY PEQUEÑA
+   ====================================================== */
+
+@media(max-height:500px){
+
+    body.darkcache-mode h1{
+
+        display:none;
+
+    }
+
+
+    body.darkcache-mode #language-selector{
+
+        margin-bottom:8px;
+
+    }
+
+
+    body.darkcache-mode .puzzle{
+
+        padding:6px;
+
+        margin:4px 0;
+
+    }
+
 }
 
 </style>
 
 </head>
 
+
 <body>
 
 <div class="container">
+
+
+    <!-- ==================================================
+         LOGO
+         ================================================== -->
 
     <img
         src="chess-mystery-logo.png"
@@ -78,7 +300,19 @@ h1{
         class="logo"
     >
 
-    <h1>Chess Mystery Cache</h1>
+
+    <!-- ==================================================
+         TÍTULO
+         ================================================== -->
+
+    <h1>
+        Chess Mystery Cache
+    </h1>
+
+
+    <!-- ==================================================
+         IDIOMAS
+         ================================================== -->
 
     <div id="language-selector">
 
@@ -96,35 +330,83 @@ h1{
 
     </div>
 
+
+    <!-- ==================================================
+         LISTA DE PUZZLES
+         ================================================== -->
+
     <div id="list">
+
         Cargando...
+
     </div>
 
 </div>
 
+
 <script>
+
+/* ======================================================
+   DETECTAR DARK CACHE
+   ====================================================== */
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const darkCacheMode =
+    params.get("darkcache") === "true";
+
+
+if(darkCacheMode){
+
+    document.body.classList.add(
+        "darkcache-mode"
+    );
+
+}
+
+
+/* ======================================================
+   IDIOMA
+   ====================================================== */
 
 let language =
     localStorage.getItem("language");
+
 
 if(!language){
 
     const browserLang =
         navigator.language.toLowerCase();
 
+
     if(browserLang.startsWith("ca")){
 
         language = "ca";
 
-    }else if(browserLang.startsWith("en")){
+    }
+
+    else if(browserLang.startsWith("en")){
 
         language = "en";
 
-    }else{
+    }
+
+    else{
 
         language = "es";
+
     }
+
 }
+
+
+/* ======================================================
+   CAMBIAR IDIOMA
+   ====================================================== */
 
 function setLanguage(lang){
 
@@ -134,47 +416,90 @@ function setLanguage(lang){
     );
 
     location.reload();
+
 }
+
+
+/* ======================================================
+   CARGAR PUZZLES
+   ====================================================== */
 
 async function loadList(){
 
     const puzzles =
         await (
+
             await fetch(
                 "puzzles/index.json"
             )
+
         ).json();
+
 
     const container =
         document.getElementById(
             "list"
         );
 
+
     container.innerHTML = "";
+
 
     puzzles.forEach(puzzle => {
 
         const link =
             document.createElement("a");
 
+
         link.className =
             "puzzle";
 
-        link.href =
-            `play.html?p=${puzzle.id}`;
+
+        /* ==============================================
+           MODO NORMAL
+           ============================================== */
+
+        if(!darkCacheMode){
+
+            link.href =
+                `play.html?p=${puzzle.id}`;
+
+        }
+
+
+        /* ==============================================
+           MODO DARK CACHE
+           ============================================== */
+
+        else{
+
+            link.href =
+                `play.html?p=${puzzle.id}&darkcache=true`;
+
+        }
+
 
         link.textContent =
             puzzle.title[language];
 
+
         container.appendChild(
             link
         );
+
     });
+
 }
+
+
+/* ======================================================
+   INICIAR
+   ====================================================== */
 
 loadList();
 
 </script>
 
 </body>
+
 </html>
