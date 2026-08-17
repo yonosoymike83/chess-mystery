@@ -317,6 +317,15 @@ body.darkcache-mode #top-bar button{
 
 }
 
+/* ------------------------------------------------------
+   OCULTAR IDIOMAS DENTRO DEL PUZZLE
+   ------------------------------------------------------ */
+
+body.darkcache-mode #top-bar{
+
+    display:none;
+
+}
 
 /* ------------------------------------------------------
    DESCRIPCIÓN
