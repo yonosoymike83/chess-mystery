@@ -12,11 +12,26 @@
 
 <title>Chess Mystery Cache</title>
 
+
 <style>
 
 /* ======================================================
-   CHESS MYSTERY
+   GENERAL
    ====================================================== */
+
+html,
+body{
+
+    margin:0;
+
+    padding:0;
+
+    width:100%;
+
+    min-height:100%;
+
+}
+
 
 body{
 
@@ -24,19 +39,15 @@ body{
 
     color:white;
 
-    font-family:
-        Arial,
-        sans-serif;
+    font-family:Arial,sans-serif;
 
     text-align:center;
-
-    margin:0;
 
 }
 
 
 /* ======================================================
-   CONTENEDOR NORMAL
+   MODO NORMAL
    ====================================================== */
 
 .container{
@@ -112,8 +123,6 @@ h1{
 
     font-size:1.1rem;
 
-    transition:0.2s;
-
 }
 
 
@@ -130,9 +139,13 @@ h1{
 
 body.darkcache-mode{
 
-    background:#111;
+    width:100vw;
+
+    height:100vh;
 
     overflow:hidden;
+
+    background:#111;
 
 }
 
@@ -141,13 +154,15 @@ body.darkcache-mode .container{
 
     width:100%;
 
-    max-width:none;
-
     height:100vh;
 
-    padding:0;
+    max-width:none;
 
     margin:0;
+
+    padding:8px;
+
+    box-sizing:border-box;
 
     display:flex;
 
@@ -157,13 +172,11 @@ body.darkcache-mode .container{
 
     justify-content:center;
 
-    box-sizing:border-box;
-
 }
 
 
 /* ======================================================
-   OCULTAR ELEMENTOS INNECESARIOS
+   OCULTAR LOGO
    ====================================================== */
 
 body.darkcache-mode .logo{
@@ -173,57 +186,134 @@ body.darkcache-mode .logo{
 }
 
 
+/* ======================================================
+   TÍTULO
+   ====================================================== */
+
 body.darkcache-mode h1{
 
+    margin:
+
+        0 0 8px 0;
+
     font-family:
-        'Silkscreen',
+
+        'Courier New',
         monospace;
 
-    font-size:1.2rem;
+    font-size:
 
-    margin:0 0 15px 0;
+        clamp(
+            14px,
+            4vw,
+            22px
+        );
+
+    letter-spacing:1px;
 
 }
 
 
+/* ======================================================
+   IDIOMAS
+   ====================================================== */
+
 body.darkcache-mode #language-selector{
 
-    margin-bottom:15px;
+    margin-bottom:8px;
 
 }
 
 
 body.darkcache-mode #language-selector button{
 
-    padding:5px 8px;
+    margin:0 2px;
 
-    font-size:.65rem;
+    padding:
 
-}
+        4px 7px;
 
+    border-radius:3px;
 
-body.darkcache-mode #list{
+    font-size:
 
-    width:90%;
-
-    max-width:400px;
+        clamp(
+            8px,
+            2vw,
+            11px
+        );
 
 }
 
 
 /* ======================================================
-   PUZZLES EN DARK CACHE
+   LISTA
+   ====================================================== */
+
+body.darkcache-mode #list{
+
+    width:92%;
+
+    max-width:420px;
+
+    max-height:70vh;
+
+    overflow-y:auto;
+
+    box-sizing:border-box;
+
+}
+
+
+/* ======================================================
+   PUZZLES
    ====================================================== */
 
 body.darkcache-mode .puzzle{
 
-    padding:9px;
+    box-sizing:border-box;
 
-    margin:7px 0;
+    background:#222;
+
+    border:
+
+        2px solid #555;
 
     border-radius:4px;
 
-    font-size:.8rem;
+    padding:
+
+        8px 10px;
+
+    margin:
+
+        6px 0;
+
+    font-family:
+
+        'Courier New',
+        monospace;
+
+    font-size:
+
+        clamp(
+            10px,
+            2.8vw,
+            15px
+        );
+
+    font-weight:bold;
+
+    color:#fff;
+
+}
+
+
+body.darkcache-mode .puzzle:active{
+
+    background:#444;
+
+    transform:scale(.98);
 
 }
 
@@ -234,16 +324,9 @@ body.darkcache-mode .puzzle{
 
 @media(max-width:700px){
 
-    body.darkcache-mode h1{
+    body.darkcache-mode .container{
 
-        font-size:1rem;
-
-    }
-
-
-    body.darkcache-mode #list{
-
-        width:85%;
+        padding:6px;
 
     }
 
@@ -251,30 +334,34 @@ body.darkcache-mode .puzzle{
 
 
 /* ======================================================
-   PANTALLA MUY PEQUEÑA
+   PANTALLA BAJA / HORIZONTAL
    ====================================================== */
 
 @media(max-height:500px){
 
     body.darkcache-mode h1{
 
-        display:none;
+        margin-bottom:4px;
+
+        font-size:14px;
 
     }
 
 
     body.darkcache-mode #language-selector{
 
-        margin-bottom:8px;
+        margin-bottom:4px;
 
     }
 
 
     body.darkcache-mode .puzzle{
 
-        padding:6px;
+        padding:5px 8px;
 
-        margin:4px 0;
+        margin:3px 0;
+
+        font-size:10px;
 
     }
 
@@ -286,6 +373,7 @@ body.darkcache-mode .puzzle{
 
 
 <body>
+
 
 <div class="container">
 
@@ -306,7 +394,7 @@ body.darkcache-mode .puzzle{
          ================================================== -->
 
     <h1>
-        Chess Mystery Cache
+        Chess Mystery
     </h1>
 
 
@@ -332,7 +420,7 @@ body.darkcache-mode .puzzle{
 
 
     <!-- ==================================================
-         LISTA DE PUZZLES
+         PUZZLES
          ================================================== -->
 
     <div id="list">
@@ -347,7 +435,7 @@ body.darkcache-mode .puzzle{
 <script>
 
 /* ======================================================
-   DETECTAR DARK CACHE
+   DARK CACHE MODE
    ====================================================== */
 
 const params =
@@ -456,7 +544,7 @@ async function loadList(){
 
 
         /* ==============================================
-           MODO NORMAL
+           ENLACE NORMAL
            ============================================== */
 
         if(!darkCacheMode){
@@ -468,7 +556,7 @@ async function loadList(){
 
 
         /* ==============================================
-           MODO DARK CACHE
+           ENLACE DARK CACHE
            ============================================== */
 
         else{
@@ -499,6 +587,7 @@ async function loadList(){
 loadList();
 
 </script>
+
 
 </body>
 
