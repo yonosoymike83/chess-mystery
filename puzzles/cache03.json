@@ -1,13 +1,13 @@
 {
   "title": {
-    "ca": "Szach Mat",
-    "es": "Szach Mat",
-    "en": "Szach Mat"
+    "ca": "Šach",
+    "es": "Šach",
+    "en": "Šach"
   },
 
   "description": {
-    "ca": "Les negres juguen i troben la combinació guanyadora.",
-    "es": "Las negras juegan y encuentran la combinación ganadora.",
+    "ca": "Černé jsou na tahu a najdou vítěznou kombinaci.",
+    "es": "Černé jsou na tahu a najdou vítěznou kombinaci.",
     "en": "Black to move and find the winning combination."
   },
 
