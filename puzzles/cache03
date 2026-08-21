@@ -1,0 +1,27 @@
+{
+  "title": {
+    "ca": "Szach Mat",
+    "es": "Szach Mat",
+    "en": "Szach Mat"
+  },
+
+  "description": {
+    "ca": "Les negres juguen i troben la combinació guanyadora.",
+    "es": "Las negras juegan y encuentran la combinación ganadora.",
+    "en": "Black to move and find the winning combination."
+  },
+
+  "fen": "5rk1/p1p1br2/1p1p2qp/4p3/2PPn1pP/3Q2P1/PPN1P1K1/2RR2B1 b - - 3 24",
+
+  "moves": [
+    "Bxh4",
+    "Rf3",
+    "Rg3+",
+    "Rf2"
+  ],
+
+  "coordinates": {
+    "lat": "N 49° 50.587",
+    "lon": "E 018° 17.600"
+  }
+}
