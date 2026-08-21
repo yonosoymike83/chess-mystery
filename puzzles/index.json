@@ -8,11 +8,19 @@
     }
   },
   {
-    "id": "cache02",
+    "id": "cache01",
     "title": {
-      "ca": "Mat de la Coça",
-      "es": "Mate de la Coz",
-      "en": "Smothered Mate"
+      "ca": "Escac i Mat en 1",
+      "es": "Jaque Mate en 1",
+      "en": "Checkmate in 1"
+    }
+  },
+  {
+    "id": "cache03",
+    "title": {
+      "ca": "Szach Mat",
+      "es": "Szach Mat",
+      "en": "Szach Mat"
     }
   }
 ]
