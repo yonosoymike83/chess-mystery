@@ -22,5 +22,13 @@
       "es": "Šach!!!",
       "en": "Šach!!!"
     }
+  },
+  {
+    "id": "cache04",
+    "title": {
+      "ca": "Szach Mat",
+      "es": "Szach Mat",
+      "en": "Szach Mat"
+    }
   }
 ]
