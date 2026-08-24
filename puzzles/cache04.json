@@ -1,7 +1,8 @@
 {
   "title": {
-    "pl": "Szach!!!",
-    "en": "Check!!!"
+    "ca": "Szach Mat",
+    "es": "Szach Mat",
+    "en": "Szach Mat"
   },
 
   "description": {
