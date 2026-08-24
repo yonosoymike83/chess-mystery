@@ -1,0 +1,32 @@
+{
+  "title": {
+    "pl": "Szach!!!",
+    "en": "Check!!!"
+  },
+
+  "description": {
+    "pl": "Czarne są na ruchu i muszą znaleźć zwycięską kombinację.",
+    "en": "Black to move and find the winning combination."
+  },
+
+  "fen": "2r2rk1/1p1bqppp/p1p1p3/3pP3/3Pn2/1P1BQ1P1/1P3PBP/P2R1RK1 b - - 0 20",
+
+  "moves": [
+    "Ng4",
+    "Be4",
+    "Qh4",
+    "g3",
+    "Rxc3",
+    "gxh4",
+    "Rd2",
+    "Qxd2",
+    "Bxe4+",
+    "Qg2",
+    "Rh3"
+  ],
+
+  "coordinates": {
+    "lat": "N 49° 50.587",
+    "lon": "E 018° 17.600"
+  }
+}
