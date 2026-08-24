@@ -10,7 +10,7 @@
     "en": "Black to move and find the winning combination."
   },
 
-  "fen": "2r2rk1/1p1bqppp/p1p1p3/3pP3/3Pn2/1P1BQ1P1/1P3PBP/P2R1RK1 b - - 0 20",
+  "fen": "2rr2k1/1b2qppp/pb2pn2/1p2P3/1P3P2/P1NB4/1B2Q1PP/R4R1K b - - 2 20",
 
   "moves": [
     "Ng4",
