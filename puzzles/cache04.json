@@ -6,7 +6,8 @@
   },
 
   "description": {
-    "pl": "Czarne są na ruchu i muszą znaleźć zwycięską kombinację.",
+    "ca": "Czarne są na ruchu i muszą znaleźć zwycięską kombinację.",
+    "es": "Czarne są na ruchu i muszą znaleźć zwycięską kombinację.",
     "en": "Black to move and find the winning combination."
   },
 
@@ -27,7 +28,7 @@
   ],
 
   "coordinates": {
-    "lat": "N 49° 50.587",
-    "lon": "E 018° 17.600"
+    "lat": "N 50° 48.420",
+    "lon": "E 019° 06.494"
   }
 }
