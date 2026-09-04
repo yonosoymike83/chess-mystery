@@ -25,6 +25,11 @@ if (!language) {
     }
 }
 
+
+/* =========================================================
+   TRADUCCIONES
+   ========================================================= */
+
 const translations = {
 
     es: {
@@ -53,11 +58,13 @@ const translations = {
 
 };
 
+
 function t(key) {
 
     return translations[language][key];
 
 }
+
 
 function setLanguage(lang) {
 
@@ -72,21 +79,48 @@ function setLanguage(lang) {
 
 
 /* =========================================================
+   ID DEL PUZZLE
+   ========================================================= */
+
+let puzzleId;
+
+
+/* =========================================================
+   COMPROBAR SI TIENE ANIMACIÓN
+   ========================================================= */
+
+function hasAnimation(type) {
+
+    return (
+        puzzle &&
+        puzzle.animation &&
+        puzzle.animation.type === type
+    );
+
+}
+
+
+/* =========================================================
    CARGAR PUZZLE
    ========================================================= */
 
 async function loadPuzzle() {
 
-    const id =
+    puzzleId =
         new URLSearchParams(location.search)
             .get("p") || "cache01";
 
     puzzle =
         await (
             await fetch(
-                `puzzles/${id}.json`
+                `puzzles/${puzzleId}.json`
             )
         ).json();
+
+
+    /* -----------------------------------------------------
+       Título y descripción
+       ----------------------------------------------------- */
 
     document.getElementById("title")
         .textContent =
@@ -96,6 +130,11 @@ async function loadPuzzle() {
         .textContent =
         puzzle.description[language];
 
+
+    /* -----------------------------------------------------
+       Estado
+       ----------------------------------------------------- */
+
     document.getElementById("status")
         .style.display =
         "block";
@@ -103,6 +142,11 @@ async function loadPuzzle() {
     document.getElementById("status")
         .textContent =
         t("pending");
+
+
+    /* -----------------------------------------------------
+       Pantalla de éxito
+       ----------------------------------------------------- */
 
     document.querySelector(
         "#success h2"
@@ -114,34 +158,53 @@ async function loadPuzzle() {
     ).textContent =
         t("copyButton");
 
+
+    /* -----------------------------------------------------
+       Chess.js
+       ----------------------------------------------------- */
+
     game =
         new Chess(
             puzzle.fen
         );
 
+
     await customElements.whenDefined(
         "chess-board"
     );
+
 
     board =
         document.getElementById(
             "board"
         );
 
+
     /*
-     * Posición inicial
+     * Posición inicial.
+     *
+     * Mantenemos esta forma porque es la que
+     * funciona con tu versión actual.
      */
+
     board.setAttribute(
         "position",
         game.fen()
     );
 
+
     board.draggablePieces = true;
+
 
     board.addEventListener(
         "drop",
         handleMove
     );
+
+
+    /* -----------------------------------------------------
+       Botón copiar
+       ----------------------------------------------------- */
 
     document
         .getElementById("copyBtn")
@@ -150,24 +213,33 @@ async function loadPuzzle() {
             copyCoords
         );
 
-    /*
-     * Crear la capa gráfica del cuadrado
-     */
-    createOverlay();
 
-    /*
-     * Mostrar el cuadrado inicial
-     */
-    setTimeout(() => {
+    /* -----------------------------------------------------
+       ANIMACIONES
+       
+       Solo se crea la capa si el JSON
+       la solicita.
+       ----------------------------------------------------- */
 
-        updatePawnSquare();
+    if (
+        hasAnimation("pawn-square")
+    ) {
 
-    }, 150);
+        createOverlay();
+
+        setTimeout(() => {
+
+            updatePawnSquare();
+
+        }, 150);
+
+    }
+
 }
 
 
 /* =========================================================
-   REINICIAR
+   REINICIAR TABLERO
    ========================================================= */
 
 function resetBoard() {
@@ -179,20 +251,23 @@ function resetBoard() {
             puzzle.fen
         );
 
+
     board.setPosition(
-        game.fen(),
-        false
+        game.fen()
     );
+
 
     document.getElementById(
         "status"
     ).style.display =
         "block";
 
+
     document.getElementById(
         "status"
     ).textContent =
         t("pending");
+
 
     document.getElementById(
         "success"
@@ -200,13 +275,25 @@ function resetBoard() {
         "hidden"
     );
 
-    updatePawnSquare();
+
+    /*
+     * Solo actualizar animación si este
+     * puzzle la tiene configurada.
+     */
+
+    if (
+        hasAnimation("pawn-square")
+    ) {
+
+        updatePawnSquare();
+
+    }
 
 }
 
 
 /* =========================================================
-   MOVIMIENTO DEL JUGADOR
+   MOVIMIENTO
    ========================================================= */
 
 function handleMove(event) {
@@ -217,6 +304,7 @@ function handleMove(event) {
     const to =
         event.detail.target;
 
+
     const move =
         game.move({
             from: from,
@@ -224,14 +312,12 @@ function handleMove(event) {
             promotion: "q"
         });
 
-    /*
-     * Movimiento ilegal
-     */
-    if (!move) {
 
-        event.detail.setAction(
-            "snapback"
-        );
+    /* -----------------------------------------------------
+       Movimiento ilegal
+       ----------------------------------------------------- */
+
+    if (!move) {
 
         setTimeout(() => {
 
@@ -239,14 +325,14 @@ function handleMove(event) {
                 game.fen()
             );
 
-        }, 50);
+        }, 10);
 
         return;
     }
 
 
     /* =====================================================
-       PUZZLE CON SECUENCIA DE MOVIMIENTOS
+       PUZZLES CON SECUENCIA DE MOVIMIENTOS
        ===================================================== */
 
     if (puzzle.moves) {
@@ -254,9 +340,11 @@ function handleMove(event) {
         const expectedMove =
             puzzle.moves[currentStep];
 
-        /*
-         * Movimiento incorrecto
-         */
+
+        /* -------------------------------------------------
+           Movimiento incorrecto
+           ------------------------------------------------- */
+
         if (
             move.san !==
             expectedMove
@@ -267,6 +355,7 @@ function handleMove(event) {
             ).textContent =
                 t("wrong");
 
+
             setTimeout(
                 resetBoard,
                 1000
@@ -276,23 +365,20 @@ function handleMove(event) {
         }
 
 
-        /*
-         * Movimiento correcto del jugador
-         */
+        /* -------------------------------------------------
+           Movimiento correcto
+           ------------------------------------------------- */
+
         currentStep++;
 
+
         /*
-         * IMPORTANTE:
+         * Actualizar tablero inmediatamente.
          *
-         * Actualizamos inmediatamente el tablero
-         * con el FEN de chess.js.
-         *
-         * Esto hace que una promoción:
-         *
-         * a8=Q
-         *
-         * aparezca realmente como Dama.
+         * Esto es especialmente importante para
+         * promociones como a8=Q.
          */
+
         board.setPosition(
             game.fen(),
             true
@@ -300,18 +386,26 @@ function handleMove(event) {
 
 
         /*
-         * Actualizar animación
+         * Actualizar animación únicamente
+         * si el JSON la solicita.
          */
-        setTimeout(() => {
 
-            updatePawnSquare();
+        if (
+            hasAnimation("pawn-square")
+        ) {
 
-        }, 50);
+            setTimeout(() => {
+
+                updatePawnSquare();
+
+            }, 50);
+
+        }
 
 
-        /*
-         * ¿Era el último movimiento?
-         */
+        /* -------------------------------------------------
+           ¿Último movimiento?
+           ------------------------------------------------- */
 
         if (
             currentStep >=
@@ -319,28 +413,36 @@ function handleMove(event) {
         ) {
 
             /*
-             * Esperamos a que termine
-             * la animación de la promoción.
+             * Damos tiempo a la animación de
+             * promoción antes de mostrar el resultado.
              */
+
             setTimeout(() => {
+
+                /*
+                 * Forzar nuevamente la posición final.
+                 * Esto garantiza que la pieza promovida
+                 * quede representada correctamente.
+                 */
 
                 board.setPosition(
                     game.fen(),
                     false
                 );
 
+
                 solvePuzzle();
 
             }, 350);
+
 
             return;
         }
 
 
-        /*
-         * Siguiente movimiento:
-         * respuesta automática del "oponente".
-         */
+        /* -------------------------------------------------
+           RESPUESTA AUTOMÁTICA
+           ------------------------------------------------- */
 
         const reply =
             puzzle.moves[currentStep];
@@ -352,6 +454,7 @@ function handleMove(event) {
                 game.move(
                     reply
                 );
+
 
             if (!replyMove) {
 
@@ -367,31 +470,36 @@ function handleMove(event) {
             /*
              * Actualizar tablero
              */
+
             board.setPosition(
                 game.fen(),
                 true
             );
 
 
-            /*
-             * Avanzar secuencia
-             */
             currentStep++;
 
 
             /*
-             * Actualizar cuadrado
+             * Actualizar animación
              */
-            setTimeout(() => {
 
-                updatePawnSquare();
+            if (
+                hasAnimation("pawn-square")
+            ) {
 
-            }, 50);
+                setTimeout(() => {
+
+                    updatePawnSquare();
+
+                }, 50);
+
+            }
 
 
-            /*
-             * ¿Se ha terminado el puzzle?
-             */
+            /* ---------------------------------------------
+               ¿Puzzle terminado?
+               --------------------------------------------- */
 
             if (
                 currentStep >=
@@ -404,6 +512,7 @@ function handleMove(event) {
                         game.fen(),
                         false
                     );
+
 
                     solvePuzzle();
 
@@ -419,7 +528,9 @@ function handleMove(event) {
 
 
     /* =====================================================
-       PUZZLE ANTIGUO DE UN SOLO MOVIMIENTO
+       PUZZLES ANTIGUOS DE UNA SOLA SOLUCIÓN
+       
+       Esto mantiene la compatibilidad con cacheXX.
        ===================================================== */
 
     const solved =
@@ -440,10 +551,15 @@ function handleMove(event) {
 
     if (solved) {
 
+        /*
+         * Actualizar posición final.
+         */
+
         board.setPosition(
             game.fen(),
             true
         );
+
 
         solvePuzzle();
 
@@ -451,14 +567,15 @@ function handleMove(event) {
     }
 
 
-    /*
-     * Movimiento incorrecto
-     */
+    /* -----------------------------------------------------
+       Movimiento incorrecto
+       ----------------------------------------------------- */
 
     document.getElementById(
         "status"
     ).textContent =
         t("wrong");
+
 
     setTimeout(
         resetBoard,
@@ -487,9 +604,11 @@ function solvePuzzle() {
     );
 
 
-    /*
-     * Mostrar explicación
-     */
+    /* -----------------------------------------------------
+       EXPLICACIÓN
+       
+       Solo aparece si el JSON contiene solutionText.
+       ----------------------------------------------------- */
 
     const coordinates =
         document.getElementById(
@@ -497,71 +616,64 @@ function solvePuzzle() {
         );
 
 
-    /*
-     * Crear bloque de explicación
-     * si todavía no existe.
-     */
-
     let explanation =
         document.getElementById(
             "solutionText"
         );
 
 
-    if (!explanation) {
+    if (
+        puzzle.solutionText
+    ) {
 
-        explanation =
-            document.createElement(
-                "div"
+        if (!explanation) {
+
+            explanation =
+                document.createElement(
+                    "div"
+                );
+
+            explanation.id =
+                "solutionText";
+
+
+            coordinates.parentNode.insertBefore(
+                explanation,
+                coordinates
             );
 
-        explanation.id =
-            "solutionText";
+        }
 
-        /*
-         * Lo colocamos antes
-         * de las coordenadas.
-         */
-
-        coordinates.parentNode.insertBefore(
-            explanation,
-            coordinates
-        );
-    }
-
-
-    /*
-     * Texto de explicación
-     */
-
-    if (puzzle.solutionText) {
 
         explanation.innerHTML =
 
             `<h3>${t("explanationTitle")}</h3>
              <p>${puzzle.solutionText[language]}</p>`;
 
-    } else {
-
-        explanation.innerHTML = "";
-
     }
 
 
-    /*
-     * Coordenadas
-     */
+    /* -----------------------------------------------------
+       COORDENADAS
+       ----------------------------------------------------- */
 
     coordinates.innerHTML =
         `<p>${puzzle.coordinates.lat} ${puzzle.coordinates.lon}</p>`;
 
 
-    /*
-     * Después de resolver ya no necesitamos
-     * el cuadrado del peón.
-     */
+    /* -----------------------------------------------------
+       Ocultar animación
+       
+       Solo si existe.
+       ----------------------------------------------------- */
 
-    hidePawnSquare();
+    if (
+        hasAnimation("pawn-square")
+    ) {
+
+        hidePawnSquare();
+
+    }
 
 }
 
@@ -578,13 +690,16 @@ function copyCoords() {
         ).innerText.trim()
     );
 
+
     const btn =
         document.getElementById(
             "copyBtn"
         );
 
+
     btn.textContent =
         "📋 ✓";
+
 
     setTimeout(() => {
 
@@ -597,25 +712,18 @@ function copyCoords() {
 
 
 /* =========================================================
-   ANIMACIÓN DEL CUADRADO
+   SISTEMA DE ANIMACIÓN
    ========================================================= */
-
-/*
- * Creamos un SVG por encima del tablero.
- *
- * No modificamos el interior de <chess-board>,
- * porque chessboard-element utiliza Shadow DOM.
- *
- * Esto nos permite dibujar nuestra propia
- * capa gráfica por encima del tablero.
- */
 
 let overlay;
 let overlaySvg;
-let squareAnimationId = null;
 
 
 function createOverlay() {
+
+    /*
+     * Evitar crear dos overlays.
+     */
 
     if (overlay) {
 
@@ -627,15 +735,11 @@ function createOverlay() {
         board.parentElement;
 
 
-    /*
-     * El contenedor debe poder alojar
-     * una capa absoluta.
-     */
-
     const computed =
         window.getComputedStyle(
             parent
         );
+
 
     if (
         computed.position ===
@@ -644,6 +748,7 @@ function createOverlay() {
 
         parent.style.position =
             "relative";
+
     }
 
 
@@ -651,6 +756,7 @@ function createOverlay() {
         document.createElement(
             "div"
         );
+
 
     overlay.id =
         "chessOverlay";
@@ -684,6 +790,7 @@ function createOverlay() {
             "svg"
         );
 
+
     overlaySvg.style.width =
         "100%";
 
@@ -697,6 +804,7 @@ function createOverlay() {
     overlay.appendChild(
         overlaySvg
     );
+
 
     parent.appendChild(
         overlay
@@ -712,7 +820,7 @@ function createOverlay() {
 
 
 /* =========================================================
-   ENCONTRAR PEÓN BLANCO
+   BUSCAR PEÓN BLANCO
    ========================================================= */
 
 function findWhitePawn() {
@@ -720,6 +828,7 @@ function findWhitePawn() {
     if (!game) {
 
         return null;
+
     }
 
 
@@ -766,11 +875,12 @@ function findWhitePawn() {
 
 
     return null;
+
 }
 
 
 /* =========================================================
-   CALCULAR CUADRADO
+   CALCULAR CUADRADO DEL PEÓN
    ========================================================= */
 
 function getPawnSquare() {
@@ -782,22 +892,9 @@ function getPawnSquare() {
     if (!pawn) {
 
         return null;
+
     }
 
-
-    /*
-     * Para un peón blanco:
-     *
-     * a2 -> lado 6
-     * a3 -> lado 5
-     * a4 -> lado 4
-     * a5 -> lado 3
-     * a6 -> lado 2
-     * a7 -> lado 1
-     *
-     * La esquina superior derecha
-     * se calcula a partir de esa distancia.
-     */
 
     const distance =
         8 - pawn.rank;
@@ -806,18 +903,20 @@ function getPawnSquare() {
     if (distance <= 0) {
 
         return null;
+
     }
 
 
     let minFile =
         pawn.file;
 
+
     let maxFile =
         pawn.file + distance;
 
 
     /*
-     * Evitar salir del tablero.
+     * No salir del tablero.
      */
 
     if (maxFile > 7) {
@@ -827,28 +926,27 @@ function getPawnSquare() {
     }
 
 
-    /*
-     * En el caso habitual del Puzzle 01:
-     *
-     * a2 -> g8
-     * a4 -> e8
-     * a5 -> d8
-     * a6 -> c8
-     * a7 -> b8
-     */
-
     return {
-        leftFile: minFile,
-        rightFile: maxFile,
-        bottomRank: pawn.rank,
-        topRank: 7
+
+        leftFile:
+            minFile,
+
+        rightFile:
+            maxFile,
+
+        bottomRank:
+            pawn.rank,
+
+        topRank:
+            7
+
     };
 
 }
 
 
 /* =========================================================
-   COORDENADAS DE UNA CASILLA
+   CONVERTIR CASILLA A COORDENADAS
    ========================================================= */
 
 function squarePoint(
@@ -861,17 +959,6 @@ function squarePoint(
     const squareSize =
         boardRect.width / 8;
 
-
-    /*
-     * chess-board está orientado
-     * con blancas abajo.
-     *
-     * file:
-     * a=0 ... h=7
-     *
-     * rank:
-     * 1=0 ... 8=7
-     */
 
     const x =
         (
@@ -909,6 +996,21 @@ function squarePoint(
 
 function updatePawnSquare() {
 
+    /*
+     * Protección adicional:
+     * si este puzzle no tiene la animación,
+     * no hacemos absolutamente nada.
+     */
+
+    if (
+        !hasAnimation("pawn-square")
+    ) {
+
+        return;
+
+    }
+
+
     if (
         !board ||
         !overlaySvg ||
@@ -916,6 +1018,7 @@ function updatePawnSquare() {
     ) {
 
         return;
+
     }
 
 
@@ -928,6 +1031,7 @@ function updatePawnSquare() {
         hidePawnSquare();
 
         return;
+
     }
 
 
@@ -938,10 +1042,6 @@ function updatePawnSquare() {
     const parentRect =
         board.parentElement
             .getBoundingClientRect();
-
-
-    const squareSize =
-        boardRect.width / 8;
 
 
     const topLeft =
@@ -981,14 +1081,15 @@ function updatePawnSquare() {
 
 
     /*
-     * Limpiar dibujo anterior
+     * Limpiar dibujo anterior.
      */
 
-    overlaySvg.innerHTML = "";
+    overlaySvg.innerHTML =
+        "";
 
 
     /*
-     * Rectángulo
+     * Crear rectángulo.
      */
 
     const rect =
@@ -1024,20 +1125,24 @@ function updatePawnSquare() {
         "none"
     );
 
+
     rect.setAttribute(
         "stroke",
         "#2e8b57"
     );
+
 
     rect.setAttribute(
         "stroke-width",
         "3"
     );
 
+
     rect.setAttribute(
         "stroke-linejoin",
         "round"
     );
+
 
     rect.setAttribute(
         "stroke-dasharray",
@@ -1045,12 +1150,9 @@ function updatePawnSquare() {
     );
 
 
-    /*
-     * Animación de aparición
-     */
-
     rect.style.opacity =
         "0";
+
 
     rect.style.transition =
         "opacity 0.25s ease";
@@ -1067,14 +1169,6 @@ function updatePawnSquare() {
             "0.9";
 
     });
-
-
-    /*
-     * Guardar para poder animarlo
-     */
-
-    squareAnimationId =
-        rect;
 
 }
 
@@ -1094,14 +1188,11 @@ function hidePawnSquare() {
 
     }
 
-    squareAnimationId =
-        null;
-
 }
 
 
 /* =========================================================
-   REDIBUJAR CUANDO CAMBIA EL TAMAÑO
+   REDIBUJAR AL CAMBIAR TAMAÑO
    ========================================================= */
 
 window.addEventListener(
@@ -1109,8 +1200,7 @@ window.addEventListener(
     () => {
 
         if (
-            game &&
-            board
+            hasAnimation("pawn-square")
         ) {
 
             updatePawnSquare();
