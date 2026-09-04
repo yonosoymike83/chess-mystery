@@ -24,6 +24,10 @@
     "Kc7",
     "a8=Q"
   ],
+  
+  "animation": {
+  "type": "pawn-square"
+},
 
   "solutionText": {
     "ca": "Regla del quadrat: si el rei defensor entra al quadrat del peó amb el seu moviment, arribarà a capturar-lo. Si no hi entra, el peó coronarà.",
