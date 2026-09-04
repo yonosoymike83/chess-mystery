@@ -1,0 +1,38 @@
+{
+  "title": {
+    "ca": "El quadrat del peó",
+    "es": "El cuadrado del peón",
+    "en": "The Square of the Pawn"
+  },
+
+  "description": {
+    "ca": "Porta el peó fins a la vuitena fila i corona.",
+    "es": "Lleva el peón hasta la octava fila y corona.",
+    "en": "Advance the pawn to the eighth rank and promote."
+  },
+
+  "fen": "6k1/8/8/8/8/8/P7/7K w - - 0 1",
+
+  "moves": [
+    "a4",
+    "Kf7",
+    "a5",
+    "Ke6",
+    "a6",
+    "Kd6",
+    "a7",
+    "Kc7",
+    "a8=Q"
+  ],
+
+  "solutionText": {
+    "ca": "Regla del quadrat: si el rei defensor entra al quadrat del peó amb el seu moviment, arribarà a capturar-lo. Si no hi entra, el peó coronarà.",
+    "es": "Regla del cuadrado: si el rey defensor entra en el cuadrado del peón con su movimiento, llegará a capturarlo. Si no entra, el peón coronará.",
+    "en": "Rule of the square: if the defending king enters the pawn's square with its move, it will reach and capture the pawn. If it does not enter, the pawn will promote."
+  },
+
+  "coordinates": {
+    "lat": "N 41° XX.XXX",
+    "lon": "E 002° XX.XXX"
+  }
+}
