@@ -79,14 +79,7 @@ function setLanguage(lang) {
 
 
 /* =========================================================
-   ID DEL PUZZLE
-   ========================================================= */
-
-let puzzleId;
-
-
-/* =========================================================
-   COMPROBAR SI TIENE ANIMACIÓN
+   COMPROBAR ANIMACIÓN
    ========================================================= */
 
 function hasAnimation(type) {
@@ -106,25 +99,30 @@ function hasAnimation(type) {
 
 async function loadPuzzle() {
 
-    puzzleId =
+    const id =
         new URLSearchParams(location.search)
             .get("p") || "cache01";
 
     puzzle =
         await (
             await fetch(
-                `puzzles/${puzzleId}.json`
+                `puzzles/${id}.json`
             )
         ).json();
 
 
     /* -----------------------------------------------------
-       Título y descripción
+       Título
        ----------------------------------------------------- */
 
     document.getElementById("title")
         .textContent =
         puzzle.title[language];
+
+
+    /* -----------------------------------------------------
+       Descripción
+       ----------------------------------------------------- */
 
     document.getElementById("description")
         .textContent =
@@ -132,7 +130,7 @@ async function loadPuzzle() {
 
 
     /* -----------------------------------------------------
-       Estado
+       Estado inicial
        ----------------------------------------------------- */
 
     document.getElementById("status")
@@ -153,6 +151,7 @@ async function loadPuzzle() {
     ).textContent =
         t("solvedTitle");
 
+
     document.getElementById(
         "copyBtn"
     ).textContent =
@@ -160,7 +159,7 @@ async function loadPuzzle() {
 
 
     /* -----------------------------------------------------
-       Chess.js
+       Inicializar Chess.js
        ----------------------------------------------------- */
 
     game =
@@ -183,8 +182,8 @@ async function loadPuzzle() {
     /*
      * Posición inicial.
      *
-     * Mantenemos esta forma porque es la que
-     * funciona con tu versión actual.
+     * Mantenemos setAttribute porque es el sistema
+     * que ya funciona correctamente en tu proyecto.
      */
 
     board.setAttribute(
@@ -203,7 +202,7 @@ async function loadPuzzle() {
 
 
     /* -----------------------------------------------------
-       Botón copiar
+       Botón copiar coordenadas
        ----------------------------------------------------- */
 
     document
@@ -215,10 +214,7 @@ async function loadPuzzle() {
 
 
     /* -----------------------------------------------------
-       ANIMACIONES
-       
-       Solo se crea la capa si el JSON
-       la solicita.
+       Animación opcional
        ----------------------------------------------------- */
 
     if (
@@ -245,6 +241,7 @@ async function loadPuzzle() {
 function resetBoard() {
 
     currentStep = 0;
+
 
     game =
         new Chess(
@@ -277,8 +274,8 @@ function resetBoard() {
 
 
     /*
-     * Solo actualizar animación si este
-     * puzzle la tiene configurada.
+     * El cuadrado solo se actualiza si este puzzle
+     * tiene configurada esta animación.
      */
 
     if (
@@ -293,7 +290,7 @@ function resetBoard() {
 
 
 /* =========================================================
-   MOVIMIENTO
+   MANEJAR MOVIMIENTO
    ========================================================= */
 
 function handleMove(event) {
@@ -332,7 +329,7 @@ function handleMove(event) {
 
 
     /* =====================================================
-       PUZZLES CON SECUENCIA DE MOVIMIENTOS
+       PUZZLES CON SECUENCIA
        ===================================================== */
 
     if (puzzle.moves) {
@@ -361,6 +358,7 @@ function handleMove(event) {
                 1000
             );
 
+
             return;
         }
 
@@ -373,10 +371,9 @@ function handleMove(event) {
 
 
         /*
-         * Actualizar tablero inmediatamente.
+         * Actualizar tablero.
          *
-         * Esto es especialmente importante para
-         * promociones como a8=Q.
+         * También fuerza correctamente las promociones.
          */
 
         board.setPosition(
@@ -386,8 +383,7 @@ function handleMove(event) {
 
 
         /*
-         * Actualizar animación únicamente
-         * si el JSON la solicita.
+         * Actualizar animación
          */
 
         if (
@@ -404,7 +400,7 @@ function handleMove(event) {
 
 
         /* -------------------------------------------------
-           ¿Último movimiento?
+           ¿Era el último movimiento?
            ------------------------------------------------- */
 
         if (
@@ -412,17 +408,11 @@ function handleMove(event) {
             puzzle.moves.length
         ) {
 
-            /*
-             * Damos tiempo a la animación de
-             * promoción antes de mostrar el resultado.
-             */
-
             setTimeout(() => {
 
                 /*
-                 * Forzar nuevamente la posición final.
-                 * Esto garantiza que la pieza promovida
-                 * quede representada correctamente.
+                 * Forzar posición final.
+                 * Especialmente importante para a8=Q.
                  */
 
                 board.setPosition(
@@ -441,7 +431,7 @@ function handleMove(event) {
 
 
         /* -------------------------------------------------
-           RESPUESTA AUTOMÁTICA
+           Movimiento automático del oponente
            ------------------------------------------------- */
 
         const reply =
@@ -530,7 +520,7 @@ function handleMove(event) {
     /* =====================================================
        PUZZLES ANTIGUOS DE UNA SOLA SOLUCIÓN
        
-       Esto mantiene la compatibilidad con cacheXX.
+       Mantiene compatibilidad con cacheXX.
        ===================================================== */
 
     const solved =
@@ -550,10 +540,6 @@ function handleMove(event) {
 
 
     if (solved) {
-
-        /*
-         * Actualizar posición final.
-         */
 
         board.setPosition(
             game.fen(),
@@ -605,9 +591,7 @@ function solvePuzzle() {
 
 
     /* -----------------------------------------------------
-       EXPLICACIÓN
-       
-       Solo aparece si el JSON contiene solutionText.
+       EXPLICACIÓN OPCIONAL
        ----------------------------------------------------- */
 
     const coordinates =
@@ -663,8 +647,6 @@ function solvePuzzle() {
 
     /* -----------------------------------------------------
        Ocultar animación
-       
-       Solo si existe.
        ----------------------------------------------------- */
 
     if (
@@ -722,7 +704,7 @@ let overlaySvg;
 function createOverlay() {
 
     /*
-     * Evitar crear dos overlays.
+     * Evitar duplicados.
      */
 
     if (overlay) {
@@ -828,7 +810,6 @@ function findWhitePawn() {
     if (!game) {
 
         return null;
-
     }
 
 
@@ -863,8 +844,13 @@ function findWhitePawn() {
             ) {
 
                 return {
-                    file: fileIndex,
-                    rank: 7 - rankIndex
+
+                    file:
+                        fileIndex,
+
+                    rank:
+                        7 - rankIndex
+
                 };
 
             }
@@ -892,53 +878,95 @@ function getPawnSquare() {
     if (!pawn) {
 
         return null;
-
     }
-
-
-    const distance =
-        8 - pawn.rank;
-
-
-    if (distance <= 0) {
-
-        return null;
-
-    }
-
-
-    let minFile =
-        pawn.file;
-
-
-    let maxFile =
-        pawn.file + distance;
 
 
     /*
-     * No salir del tablero.
+     * Número de movimientos que necesita el peón
+     * para llegar a la octava fila.
+     *
+     * a2 -> 6
+     * a3 -> 5
+     * a4 -> 4
+     * a5 -> 3
+     * a6 -> 2
+     * a7 -> 1
      */
 
-    if (maxFile > 7) {
+    const size =
+        8 - pawn.rank;
 
-        maxFile = 7;
 
+    if (size <= 0) {
+
+        return null;
+    }
+
+
+    /*
+     * El cuadrado se extiende desde la casilla
+     * del peón hacia arriba y hacia la derecha.
+     *
+     * Ejemplo:
+     *
+     * peón en a4:
+     *
+     * a4 ─── d4
+     * │       │
+     * │       │
+     * │       │
+     * a7 ─── d7
+     *
+     * 4 × 4 casillas.
+     */
+
+    const leftFile =
+        pawn.file;
+
+
+    const rightFile =
+        pawn.file +
+        size -
+        1;
+
+
+    const bottomRank =
+        pawn.rank;
+
+
+    const topRank =
+        pawn.rank +
+        size -
+        1;
+
+
+    /*
+     * Si se sale del tablero, no dibujamos
+     * un cuadrado incompleto.
+     */
+
+    if (
+        rightFile > 7 ||
+        topRank > 7
+    ) {
+
+        return null;
     }
 
 
     return {
 
         leftFile:
-            minFile,
+            leftFile,
 
         rightFile:
-            maxFile,
+            rightFile,
 
         bottomRank:
-            pawn.rank,
+            bottomRank,
 
         topRank:
-            7
+            topRank
 
     };
 
@@ -959,6 +987,19 @@ function squarePoint(
     const squareSize =
         boardRect.width / 8;
 
+
+    /*
+     * file:
+     * a = 0
+     * b = 1
+     * ...
+     * h = 7
+     *
+     * rank:
+     * 1 = 0
+     * ...
+     * 8 = 7
+     */
 
     const x =
         (
@@ -983,8 +1024,13 @@ function squarePoint(
 
 
     return {
-        x,
-        y
+
+        x:
+            x,
+
+        y:
+            y
+
     };
 
 }
@@ -997,9 +1043,9 @@ function squarePoint(
 function updatePawnSquare() {
 
     /*
-     * Protección adicional:
-     * si este puzzle no tiene la animación,
-     * no hacemos absolutamente nada.
+     * Protección:
+     * si el JSON no solicita el cuadrado,
+     * no hacemos nada.
      */
 
     if (
@@ -1007,7 +1053,6 @@ function updatePawnSquare() {
     ) {
 
         return;
-
     }
 
 
@@ -1018,7 +1063,6 @@ function updatePawnSquare() {
     ) {
 
         return;
-
     }
 
 
@@ -1031,7 +1075,6 @@ function updatePawnSquare() {
         hidePawnSquare();
 
         return;
-
     }
 
 
@@ -1044,6 +1087,10 @@ function updatePawnSquare() {
             .getBoundingClientRect();
 
 
+    /*
+     * Esquina superior izquierda
+     */
+
     const topLeft =
         squarePoint(
             square.leftFile,
@@ -1052,6 +1099,13 @@ function updatePawnSquare() {
             parentRect
         );
 
+
+    /*
+     * Esquina inferior derecha.
+     *
+     * +1 en file y -1 en rank porque necesitamos
+     * la esquina exterior de la última casilla.
+     */
 
     const bottomRight =
         squarePoint(
@@ -1081,7 +1135,7 @@ function updatePawnSquare() {
 
 
     /*
-     * Limpiar dibujo anterior.
+     * Limpiar cuadrado anterior.
      */
 
     overlaySvg.innerHTML =
@@ -1089,7 +1143,7 @@ function updatePawnSquare() {
 
 
     /*
-     * Crear rectángulo.
+     * Crear rectángulo SVG.
      */
 
     const rect =
@@ -1104,15 +1158,18 @@ function updatePawnSquare() {
         x
     );
 
+
     rect.setAttribute(
         "y",
         y
     );
 
+
     rect.setAttribute(
         "width",
         width
     );
+
 
     rect.setAttribute(
         "height",
@@ -1149,6 +1206,10 @@ function updatePawnSquare() {
         "10 6"
     );
 
+
+    /*
+     * Animación de aparición.
+     */
 
     rect.style.opacity =
         "0";
