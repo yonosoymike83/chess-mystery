@@ -274,14 +274,21 @@ async function loadPuzzle() {
        ----------------------------------------------------- */
 
     if (
-        hasAnimation("pawn-square")
+        hasAnimation("pawn-square") ||
+        hasAnimation("critical-squares")
     ) {
 
         createOverlay();
 
         setTimeout(() => {
 
-            updatePawnSquare();
+            if (hasAnimation("pawn-square")) {
+                updatePawnSquare();
+            }
+
+            if (hasAnimation("critical-squares")) {
+                updateCriticalSquares();
+            }
 
         }, 150);
 
@@ -1056,7 +1063,8 @@ function solvePuzzle() {
        ----------------------------------------------------- */
 
     if (
-        hasAnimation("pawn-square")
+        hasAnimation("pawn-square") ||
+        hasAnimation("critical-squares")
     ) {
 
         hidePawnSquare();
@@ -1202,6 +1210,7 @@ function createOverlay() {
     window.addEventListener(
         "resize",
         () => {
+
             if (hasAnimation("pawn-square")) {
                 updatePawnSquare();
             }
@@ -1209,6 +1218,7 @@ function createOverlay() {
             if (hasAnimation("critical-squares")) {
                 updateCriticalSquares();
             }
+
         }
     );
 
@@ -1659,18 +1669,22 @@ function updateCriticalSquares() {
         !overlaySvg ||
         !board
     ) {
+
         return;
     }
 
+
     const boardRect =
         board.getBoundingClientRect();
+
 
     const parentRect =
         board.parentElement
             .getBoundingClientRect();
 
+
     /*
-     * Rectángulo fijo sobre e6-f6-g6.
+     * Rectángulo fijo sobre e6, f6 y g6.
      */
 
     const topLeft =
@@ -1681,6 +1695,7 @@ function updateCriticalSquares() {
             parentRect
         );
 
+
     const bottomRight =
         squarePoint(
             7,
@@ -1689,8 +1704,10 @@ function updateCriticalSquares() {
             parentRect
         );
 
+
     overlaySvg.innerHTML =
         "";
+
 
     const rect =
         document.createElementNS(
@@ -1698,15 +1715,18 @@ function updateCriticalSquares() {
             "rect"
         );
 
+
     rect.setAttribute(
         "x",
         topLeft.x
     );
 
+
     rect.setAttribute(
         "y",
         topLeft.y
     );
+
 
     rect.setAttribute(
         "width",
@@ -1714,50 +1734,62 @@ function updateCriticalSquares() {
         topLeft.x
     );
 
+
     rect.setAttribute(
         "height",
         bottomRight.y -
         topLeft.y
     );
 
+
     rect.setAttribute(
         "fill",
         "none"
     );
+
 
     rect.setAttribute(
         "stroke",
         "#2e8b57"
     );
 
+
     rect.setAttribute(
         "stroke-width",
         "3"
     );
+
 
     rect.setAttribute(
         "stroke-linejoin",
         "round"
     );
 
+
     rect.setAttribute(
         "stroke-dasharray",
         "10 6"
     );
 
+
     rect.style.opacity =
         "0";
 
+
     rect.style.transition =
         "opacity 0.3s ease";
+
 
     overlaySvg.appendChild(
         rect
     );
 
+
     requestAnimationFrame(() => {
+
         rect.style.opacity =
             "0.9";
+
     });
 
 }
@@ -1766,7 +1798,6 @@ function updateCriticalSquares() {
 /* =========================================================
    OCULTAR CUADRADO
    ========================================================= */
-
 
 function hidePawnSquare() {
 
@@ -1790,12 +1821,12 @@ window.addEventListener(
     "resize",
     () => {
 
-        if (
-            hasAnimation("pawn-square")
-        ) {
-
+        if (hasAnimation("pawn-square")) {
             updatePawnSquare();
+        }
 
+        if (hasAnimation("critical-squares")) {
+            updateCriticalSquares();
         }
 
     }
