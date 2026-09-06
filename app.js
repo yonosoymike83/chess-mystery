@@ -2,6 +2,7 @@ let puzzle;
 let board;
 let game;
 let currentStep = 0;
+let currentStage = 0;
 
 let language =
     localStorage.getItem("language");
@@ -37,7 +38,8 @@ const translations = {
         wrong: "❌ No es la solución",
         solvedTitle: "✅ Puzzle resuelto",
         copyButton: "📋 Copiar coordenadas",
-        explanationTitle: "💡 Explicación"
+        explanationTitle: "💡 Explicación",
+        stageSuccess: "✅ ¡Correcto! Siguiente posición…"
     },
 
     ca: {
@@ -45,7 +47,8 @@ const translations = {
         wrong: "❌ No és la solució",
         solvedTitle: "✅ Puzle resolt",
         copyButton: "📋 Copiar coordenades",
-        explanationTitle: "💡 Explicació"
+        explanationTitle: "💡 Explicació",
+        stageSuccess: "✅ Correcte! Següent posició…"
     },
 
     en: {
@@ -53,7 +56,8 @@ const translations = {
         wrong: "❌ Not the solution",
         solvedTitle: "✅ Puzzle solved",
         copyButton: "📋 Copy coordinates",
-        explanationTitle: "💡 Explanation"
+        explanationTitle: "💡 Explanation",
+        stageSuccess: "✅ Correct! Next position…"
     }
 
 };
@@ -89,6 +93,36 @@ function hasAnimation(type) {
         puzzle.animation &&
         puzzle.animation.type === type
     );
+
+}
+
+
+/* =========================================================
+   COMPROBAR SI ES PUZZLE POR STAGES
+   ========================================================= */
+
+function hasStages() {
+
+    return (
+        puzzle &&
+        Array.isArray(puzzle.stages) &&
+        puzzle.stages.length > 0
+    );
+
+}
+
+
+/* =========================================================
+   OBTENER STAGE ACTUAL
+   ========================================================= */
+
+function getCurrentStage() {
+
+    if (!hasStages()) {
+        return null;
+    }
+
+    return puzzle.stages[currentStage];
 
 }
 
@@ -159,12 +193,34 @@ async function loadPuzzle() {
 
 
     /* -----------------------------------------------------
+       Inicializar índices
+       ----------------------------------------------------- */
+
+    currentStep = 0;
+    currentStage = 0;
+
+
+    /* -----------------------------------------------------
+       Determinar FEN inicial
+       ----------------------------------------------------- */
+
+    let initialFen = puzzle.fen;
+
+    if (hasStages()) {
+
+        initialFen =
+            puzzle.stages[0].fen;
+
+    }
+
+
+    /* -----------------------------------------------------
        Inicializar Chess.js
        ----------------------------------------------------- */
 
     game =
         new Chess(
-            puzzle.fen
+            initialFen
         );
 
 
@@ -235,6 +291,104 @@ async function loadPuzzle() {
 
 
 /* =========================================================
+   CARGAR SIGUIENTE STAGE
+   ========================================================= */
+
+function loadNextStage() {
+
+    currentStage++;
+
+    currentStep = 0;
+
+
+    /* -----------------------------------------------------
+       Comprobar si todavía quedan stages
+       ----------------------------------------------------- */
+
+    if (
+        currentStage >=
+        puzzle.stages.length
+    ) {
+
+        solvePuzzle();
+
+        return;
+    }
+
+
+    const stage =
+        puzzle.stages[currentStage];
+
+
+    /* -----------------------------------------------------
+       Crear nueva posición Chess.js
+       ----------------------------------------------------- */
+
+    game =
+        new Chess(
+            stage.fen
+        );
+
+
+    /* -----------------------------------------------------
+       Actualizar tablero
+       ----------------------------------------------------- */
+
+    board.setPosition(
+        game.fen(),
+        true
+    );
+
+
+    /* -----------------------------------------------------
+       Estado
+       ----------------------------------------------------- */
+
+    const status =
+        document.getElementById(
+            "status"
+        );
+
+    status.style.display =
+        "block";
+
+    status.textContent =
+        t("stageSuccess");
+
+
+    /* -----------------------------------------------------
+       Actualizar animación si existe
+       ----------------------------------------------------- */
+
+    if (
+        hasAnimation("pawn-square")
+    ) {
+
+        setTimeout(() => {
+
+            updatePawnSquare();
+
+        }, 100);
+
+    }
+
+
+    /*
+     * Pequeña pausa para que el jugador vea
+     * la nueva posición antes de poder mover.
+     */
+
+    setTimeout(() => {
+
+        status.textContent =
+            t("pending");
+
+    }, 1000);
+
+}
+
+
+/* =========================================================
    REINICIAR TABLERO
    ========================================================= */
 
@@ -243,10 +397,29 @@ function resetBoard() {
     currentStep = 0;
 
 
-    game =
-        new Chess(
-            puzzle.fen
-        );
+    /*
+     * En puzzles por stages debemos reiniciar
+     * únicamente el stage actual.
+     */
+
+    if (hasStages()) {
+
+        const stage =
+            puzzle.stages[currentStage];
+
+        game =
+            new Chess(
+                stage.fen
+            );
+
+    } else {
+
+        game =
+            new Chess(
+                puzzle.fen
+            );
+
+    }
 
 
     board.setPosition(
@@ -329,7 +502,244 @@ function handleMove(event) {
 
 
     /* =====================================================
-       PUZZLES CON SECUENCIA
+       PUZZLES POR STAGES
+       ===================================================== */
+
+    if (hasStages()) {
+
+        const stage =
+            getCurrentStage();
+
+
+        const expectedMove =
+            stage.moves[currentStep];
+
+
+        /* -------------------------------------------------
+           Movimiento incorrecto
+           ------------------------------------------------- */
+
+        if (
+            move.san !==
+            expectedMove
+        ) {
+
+            document.getElementById(
+                "status"
+            ).textContent =
+                t("wrong");
+
+
+            setTimeout(
+                resetBoard,
+                1000
+            );
+
+
+            return;
+        }
+
+
+        /* -------------------------------------------------
+           Movimiento correcto
+           ------------------------------------------------- */
+
+        currentStep++;
+
+
+        /*
+         * Actualizar tablero.
+         *
+         * También fuerza correctamente las promociones.
+         */
+
+        board.setPosition(
+            game.fen(),
+            true
+        );
+
+
+        /*
+         * Actualizar animación
+         */
+
+        if (
+            hasAnimation("pawn-square")
+        ) {
+
+            setTimeout(() => {
+
+                updatePawnSquare();
+
+            }, 50);
+
+        }
+
+
+        /* -------------------------------------------------
+           ¿Era el último movimiento del stage?
+           ------------------------------------------------- */
+
+        if (
+            currentStep >=
+            stage.moves.length
+        ) {
+
+            /*
+             * Si es el último stage, resolver puzzle.
+             */
+
+            if (
+                currentStage >=
+                puzzle.stages.length - 1
+            ) {
+
+                setTimeout(() => {
+
+                    board.setPosition(
+                        game.fen(),
+                        false
+                    );
+
+
+                    solvePuzzle();
+
+                }, 350);
+
+
+                return;
+            }
+
+
+            /*
+             * Todavía quedan stages.
+             */
+
+            setTimeout(() => {
+
+                loadNextStage();
+
+            }, 900);
+
+
+            return;
+        }
+
+
+        /* -------------------------------------------------
+           Movimiento automático del oponente
+           ------------------------------------------------- */
+
+        const reply =
+            stage.moves[currentStep];
+
+
+        setTimeout(() => {
+
+            const replyMove =
+                game.move(
+                    reply
+                );
+
+
+            if (!replyMove) {
+
+                console.error(
+                    "Movimiento automático inválido:",
+                    reply
+                );
+
+                return;
+            }
+
+
+            /*
+             * Actualizar tablero
+             */
+
+            board.setPosition(
+                game.fen(),
+                true
+            );
+
+
+            currentStep++;
+
+
+            /*
+             * Actualizar animación
+             */
+
+            if (
+                hasAnimation("pawn-square")
+            ) {
+
+                setTimeout(() => {
+
+                    updatePawnSquare();
+
+                }, 50);
+
+            }
+
+
+            /* ---------------------------------------------
+               ¿Stage terminado?
+               --------------------------------------------- */
+
+            if (
+                currentStep >=
+                stage.moves.length
+            ) {
+
+                /*
+                 * Último stage
+                 */
+
+                if (
+                    currentStage >=
+                    puzzle.stages.length - 1
+                ) {
+
+                    setTimeout(() => {
+
+                        board.setPosition(
+                            game.fen(),
+                            false
+                        );
+
+
+                        solvePuzzle();
+
+                    }, 350);
+
+                }
+
+                /*
+                 * Todavía quedan stages
+                 */
+
+                else {
+
+                    setTimeout(() => {
+
+                        loadNextStage();
+
+                    }, 900);
+
+                }
+
+            }
+
+        }, 650);
+
+
+        return;
+    }
+
+
+    /* =====================================================
+       PUZZLES CON SECUENCIA NORMAL
        ===================================================== */
 
     if (puzzle.moves) {
@@ -409,11 +819,6 @@ function handleMove(event) {
         ) {
 
             setTimeout(() => {
-
-                /*
-                 * Forzar posición final.
-                 * Especialmente importante para a8=Q.
-                 */
 
                 board.setPosition(
                     game.fen(),
@@ -519,7 +924,7 @@ function handleMove(event) {
 
     /* =====================================================
        PUZZLES ANTIGUOS DE UNA SOLA SOLUCIÓN
-       
+
        Mantiene compatibilidad con cacheXX.
        ===================================================== */
 
@@ -616,6 +1021,7 @@ function solvePuzzle() {
                 document.createElement(
                     "div"
                 );
+
 
             explanation.id =
                 "solutionText";
