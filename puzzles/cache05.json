@@ -36,6 +36,13 @@
     "Kh7",
     "Rf3"
   ],
+
+    "solutionText": {
+    "ca": "Regla del quadrat: si el rei defensor entra al quadrat del peó amb el seu moviment, arribarà a capturar-lo. Si no hi entra, el peó coronarà.",
+    "es": "Regla del cuadrado: si el rey defensor entra en el cuadrado del peón con su movimiento, llegará a capturarlo. Si no entra, el peón coronará.",
+    "en": "Rule of the square: if the defending king enters the pawn's square with its move, it will reach and capture the pawn. If it does not enter, the pawn will promote."
+  },
+
   "coordinates": {
     "lat": "N 49° 50.587",
     "lon": "E 018° 17.600"
