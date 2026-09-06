@@ -1,0 +1,66 @@
+{
+  "title": {
+    "ca": "El peó en sisena",
+    "es": "El peón en sexta",
+    "en": "The Pawn on the Sixth Rank"
+  },
+  "description": {
+    "ca": "Resol les tres posicions i demostra que saps aprofitar la força d'un peó avançat.",
+    "es": "Resuelve las tres posiciones y demuestra que sabes aprovechar la fuerza de un peón avanzado.",
+    "en": "Solve all three positions and demonstrate how to use the power of an advanced pawn."
+  },
+
+  "stages": [
+    {
+      "fen": "5k2/8/5PK1/8/8/8/8/8 w - - 0 1",
+      "moves": [
+        "f7",
+        "Ke7",
+        "Kg7"
+      ]
+    },
+    {
+      "fen": "k7/8/2P5/K7/8/8/8/8 w - - 0 1",
+      "moves": [
+        "Ka6",
+        "Kb8",
+        "Kb6",
+        "Kc8",
+        "c7",
+        "Kd7",
+        "Kb7"
+      ]
+    },
+    {
+      "fen": "8/6k1/4P3/6K1/8/8/8/8 w - - 0 1",
+      "moves": [
+        "Kf5",
+        "Kg8",
+        "Kg6",
+        "Kf8",
+        "Kf6",
+        "Ke8",
+        "e7",
+        "Kd7",
+        "Kf7"
+      ]
+    }
+  ],
+
+  "stageSuccess": {
+    "ca": "Correcte! Continua amb la següent posició.",
+    "es": "¡Correcto! Continúa con la siguiente posición.",
+    "en": "Correct! Continue with the next position."
+  },
+
+  "solutionText": {
+    "ca": "Un peó a sisena és una força molt poderosa, especialment quan està recolzat pel seu rei. La clau és aprofitar la coordinació entre el rei i el peó per obligar el rei defensor a cedir terreny i aconseguir la coronació.",
+    "es": "Un peón en sexta es una fuerza muy poderosa, especialmente cuando está apoyado por su rey. La clave es aprovechar la coordinación entre el rey y el peón para obligar al rey defensor a ceder terreno y conseguir la coronación.",
+    "en": "A pawn on the sixth rank is a very powerful force, especially when supported by its king. The key is to use the coordination between king and pawn to force the defending king back and achieve promotion."
+  },
+
+  "coordinates": {
+    "lat": "N 41° XX.XXX",
+    "lon": "E 002° XX.XXX"
+  }
+}
