@@ -30,5 +30,13 @@
       "es": "Szach Mat",
       "en": "Szach Mat"
     }
+  },
+  {
+    "id": "cache05",
+    "title": {
+      "ca": "GM catalans #01",
+      "es": "GM catalanes #01",
+      "en": "Catalan GM #01"
+    }
   }
 ]
