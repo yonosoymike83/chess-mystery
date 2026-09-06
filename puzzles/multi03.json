@@ -1,0 +1,67 @@
+{
+  "title": {
+    "ca": "Les caselles crítiques",
+    "es": "Las casillas críticas",
+    "en": "Critical Squares"
+  },
+
+  "description": {
+    "ca": "Troba les caselles crítiques que permeten al teu rei donar suport a l'avanç del peó.",
+    "es": "Encuentra las casillas críticas que permiten a tu rey apoyar el avance del peón.",
+    "en": "Find the critical squares that allow your king to support the pawn's advance."
+  },
+
+  "stages": [
+    {
+      "fen": "5k2/8/4K3/5P2/8/8/8/8 w - - 0 1",
+      "moves": [
+        "Kf6",
+        "Ke8",
+        "Kg7",
+        "Ke7",
+        "f6+",
+        "Ke6",
+        "f7"
+      ]
+    },
+    {
+      "fen": "5k2/8/5K2/5P2/8/8/8/8 w - - 0 1",
+      "moves": [
+        "Ke6",
+        "Ke8",
+        "f6",
+        "Kf8",
+        "f7"
+      ]
+    },
+    {
+      "fen": "5k2/8/6K1/5P2/8/8/8/8 w - - 0 1",
+      "moves": [
+        "Kf6",
+        "Ke8",
+        "Kg7",
+        "Ke7",
+        "f6+",
+        "Ke6",
+        "f7"
+      ]
+    }
+  ],
+
+  "stageSuccess": {
+    "ca": "Correcte! Continua amb la següent posició.",
+    "es": "¡Correcto! Continúa con la siguiente posición.",
+    "en": "Correct! Continue with the next position."
+  },
+
+  "solutionText": {
+    "ca": "Si el rei del bàndol fort se situa en una de les caselles crítiques, el peó corona. Per al peó en cinquena, les caselles crítiques són les tres caselles del davant: e6, f6 i g6.",
+    "es": "Si el rey del bando fuerte se sitúa en una de las casillas críticas, el peón corona. Para el peón en quinta, las casillas críticas son las tres casillas de delante: e6, f6 y g6.",
+    "en": "If the king of the stronger side reaches one of the critical squares, the pawn promotes. For a pawn on the fifth rank, the critical squares are the three squares directly ahead: e6, f6 and g6."
+  },
+
+  "coordinates": {
+    "lat": "N 41° XX.XXX",
+    "lon": "E 002° XX.XXX"
+  }
+}
