@@ -1,0 +1,43 @@
+{
+  "id": "cache05",
+  "title": {
+    "ca": "Grans Mestres Catalans #01",
+    "es": "Grandes Maestros Catalanes #01",
+    "en": "Catalan Grandmasters #01"
+  },
+  "description": {
+    "ca": "Les blanques juguen i han de trobar la combinació guanyadora.",
+    "es": "Las blancas juegan y deben encontrar la combinación ganadora.",
+    "en": "White to move and find the winning combination."
+  },
+  "fen": "r1q2rk1/1p1b2p1/p1p2n2/2p1Pp2/3Pp3/P2B1NP1/4N1BP/1R1Q1RK1 w - - 0 19",
+  "moves": [
+    "f5",
+    "dxc3",
+    "Bxc3",
+    "Na6",
+    "Nxh5",
+    "Nxc5",
+    "Nf6+",
+    "Bxf6",
+    "exf6",
+    "Bxf5",
+    "exf5",
+    "Ne4",
+    "Qc1",
+    "g5",
+    "Qd1",
+    "Nxc3",
+    "Qh5",
+    "Ne4",
+    "Qh6",
+    "Nxf6",
+    "Qxg5+",
+    "Kh7",
+    "Rf3"
+  ],
+  "coordinates": {
+    "lat": "N 49° 50.587",
+    "lon": "E 018° 17.600"
+  }
+}
