@@ -1201,7 +1201,15 @@ function createOverlay() {
 
     window.addEventListener(
         "resize",
-        updatePawnSquare
+        () => {
+            if (hasAnimation("pawn-square")) {
+                updatePawnSquare();
+            }
+
+            if (hasAnimation("critical-squares")) {
+                updateCriticalSquares();
+            }
+        }
     );
 
 }
@@ -1641,8 +1649,124 @@ function updatePawnSquare() {
 
 
 /* =========================================================
+   ACTUALIZAR CASILLAS CRÍTICAS
+   ========================================================= */
+
+function updateCriticalSquares() {
+
+    if (
+        !hasAnimation("critical-squares") ||
+        !overlaySvg ||
+        !board
+    ) {
+        return;
+    }
+
+    const boardRect =
+        board.getBoundingClientRect();
+
+    const parentRect =
+        board.parentElement
+            .getBoundingClientRect();
+
+    /*
+     * Rectángulo fijo sobre e6-f6-g6.
+     */
+
+    const topLeft =
+        squarePoint(
+            4,
+            5,
+            boardRect,
+            parentRect
+        );
+
+    const bottomRight =
+        squarePoint(
+            7,
+            4,
+            boardRect,
+            parentRect
+        );
+
+    overlaySvg.innerHTML =
+        "";
+
+    const rect =
+        document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "rect"
+        );
+
+    rect.setAttribute(
+        "x",
+        topLeft.x
+    );
+
+    rect.setAttribute(
+        "y",
+        topLeft.y
+    );
+
+    rect.setAttribute(
+        "width",
+        bottomRight.x -
+        topLeft.x
+    );
+
+    rect.setAttribute(
+        "height",
+        bottomRight.y -
+        topLeft.y
+    );
+
+    rect.setAttribute(
+        "fill",
+        "none"
+    );
+
+    rect.setAttribute(
+        "stroke",
+        "#2e8b57"
+    );
+
+    rect.setAttribute(
+        "stroke-width",
+        "3"
+    );
+
+    rect.setAttribute(
+        "stroke-linejoin",
+        "round"
+    );
+
+    rect.setAttribute(
+        "stroke-dasharray",
+        "10 6"
+    );
+
+    rect.style.opacity =
+        "0";
+
+    rect.style.transition =
+        "opacity 0.3s ease";
+
+    overlaySvg.appendChild(
+        rect
+    );
+
+    requestAnimationFrame(() => {
+        rect.style.opacity =
+            "0.9";
+    });
+
+}
+
+
+/* =========================================================
    OCULTAR CUADRADO
    ========================================================= */
+
 
 function hidePawnSquare() {
 
