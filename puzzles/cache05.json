@@ -10,7 +10,7 @@
     "es": "Las blancas juegan y deben encontrar la combinación ganadora.",
     "en": "White to move and find the winning combination."
   },
-  "fen": "rnq2rk1/p2bbp2/2p3p1/2P1PP1p/3pP3/P1N3N1/3B2PP/R2Q1RK1 b - - 0 19",
+  "fen": "rnq2rk1/p2bbp2/2p3p1/2P1P2p/3pPP2/P1N3N1/3B2PP/R2Q1RK1 w - - 0 19",
   "moves": [
     "f5",
     "dxc3",
