@@ -10,7 +10,11 @@
     "es": "Encuentra las casillas críticas que permiten a tu rey apoyar el avance del peón.",
     "en": "Find the critical squares that allow your king to support the pawn's advance."
   },
-
+  
+"animation": {
+    "type": "critical-squares"
+}
+  
   "stages": [
     {
       "fen": "5k2/8/4K3/5P2/8/8/8/8 w - - 0 1",
