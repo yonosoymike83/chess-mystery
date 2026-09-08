@@ -3,6 +3,22 @@ let board;
 let game;
 let currentStep = 0;
 let currentStage = 0;
+/* JAQUE: resaltado directo mediante ::part de chess-board. También elimina el resaltado amarillo del arrastre. */
+let checkHighlightStyle = null;
+const chessSquares = [];
+for (let r=1;r<=8;r++){for(const f of 'abcdefgh')chessSquares.push(f+r);}
+function updateCheckHighlight(){
+ if(!checkHighlightStyle)return;
+ let css=chessSquares.map(s=>`chess-board::part(${s}){box-shadow:none !important;}`).join('\n');
+ if(game&&board){
+  let check=false;
+  try{check=typeof game.isCheck==='function'?game.isCheck():(typeof game.inCheck==='function'?game.inCheck():typeof game.in_check==='function'?game.in_check():false);}catch(e){}
+  if(check){const a=game.board(),c=game.turn();let k=null;for(let r=0;r<8&&!k;r++){for(let f=0;f<8;f++){const q=a[r][f];if(q&&q.type==='k'&&q.color===c){k='abcdefgh'[f]+(8-r);break;}}}if(k)css+=`\nchess-board::part(${k}){box-shadow:inset 0 0 0 4px #e53935 !important;}`;}
+ }
+ checkHighlightStyle.textContent=css;
+}
+function installCheckHighlight(){if(checkHighlightStyle)return;checkHighlightStyle=document.createElement('style');checkHighlightStyle.id='checkHighlightStyle';document.head.appendChild(checkHighlightStyle);updateCheckHighlight();}
+
 
 let language =
     localStorage.getItem("language");
@@ -234,6 +250,8 @@ async function loadPuzzle() {
             "board"
         );
 
+    installCheckHighlight();
+
 
     /*
      * Posición inicial.
@@ -246,6 +264,8 @@ async function loadPuzzle() {
         "position",
         game.fen()
     );
+
+    updateCheckHighlight();
 
 
     board.draggablePieces = true;
@@ -341,6 +361,8 @@ function loadNextStage() {
         true
     );
 
+    updateCheckHighlight();
+
 
     /* -----------------------------------------------------
        Estado
@@ -427,6 +449,8 @@ function resetBoard() {
     board.setPosition(
         game.fen()
     );
+
+    updateCheckHighlight();
 
 
     document.getElementById(
@@ -560,18 +584,23 @@ function handleMove(event) {
             true
         );
 
+        updateCheckHighlight()
+
 
         /*
          * Actualizar animación
          */
 
         if (
-            hasAnimation("pawn-square")
+            hasAnimation("pawn-square") ||
+            hasAnimation("critical-squares") ||
+            hasAnimation("reti")
         ) {
 
             setTimeout(() => {
 
-                updatePawnSquare();
+                updateAnimation();
+                updateCheckHighlight();
 
             }, 50);
 
@@ -602,6 +631,8 @@ function handleMove(event) {
                         game.fen(),
                         false
                     );
+
+                        updateCheckHighlight()
 
 
                     solvePuzzle();
@@ -663,6 +694,10 @@ function handleMove(event) {
                 game.fen(),
                 true
             );
+
+            // Actualizar el indicador también después de la jugada automática.
+            // Esto evita que un jaque quede marcado hasta la siguiente jugada del jugador.
+            updateCheckHighlight();
 
 
             currentStep++;
@@ -793,18 +828,23 @@ function handleMove(event) {
             true
         );
 
+        updateCheckHighlight()
+
 
         /*
          * Actualizar animación
          */
 
         if (
-            hasAnimation("pawn-square")
+            hasAnimation("pawn-square") ||
+            hasAnimation("critical-squares") ||
+            hasAnimation("reti")
         ) {
 
             setTimeout(() => {
 
-                updatePawnSquare();
+                updateAnimation();
+                updateCheckHighlight();
 
             }, 50);
 
@@ -826,6 +866,8 @@ function handleMove(event) {
                     game.fen(),
                     false
                 );
+
+                    updateCheckHighlight()
 
 
                 solvePuzzle();
@@ -873,6 +915,9 @@ function handleMove(event) {
                 true
             );
 
+            // Actualizar el indicador después de la respuesta automática.
+            updateCheckHighlight();
+
 
             currentStep++;
 
@@ -909,6 +954,8 @@ function handleMove(event) {
                         game.fen(),
                         false
                     );
+
+                        updateCheckHighlight()
 
 
                     solvePuzzle();
@@ -952,6 +999,8 @@ function handleMove(event) {
             game.fen(),
             true
         );
+
+        updateCheckHighlight()
 
 
         solvePuzzle();
@@ -1059,12 +1108,15 @@ function solvePuzzle() {
 
     if (
         hasAnimation("pawn-square") ||
-        hasAnimation("critical-squares") ||
-        hasAnimation("reti")
+        hasAnimation("critical-squares")
     ) {
 
         hidePawnSquare();
 
+    }
+
+    if (hasAnimation("reti")) {
+        updateRetiAnimation();
     }
 
 }
@@ -1665,16 +1717,6 @@ function updateAnimation() {
     ) {
 
         updateCriticalSquares();
-
-        return;
-    }
-
-
-    if (
-        hasAnimation("reti")
-    ) {
-
-        updateRetiAnimation();
 
     }
 
