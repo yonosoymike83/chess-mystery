@@ -1,0 +1,31 @@
+{
+  "title": {
+    "ca": "Mat de Alfil i Cavall",
+    "es": "Mate de Alfil y Caballo",
+    "en": "Bishop & Knight Checkmate"
+  },
+  "description": {
+    "ca": "Troba el camí del rei per arribar a temps als dos peons.",
+    "es": "Encuentra el camino del rey para llegar a tiempo a los dos peones.",
+    "en": "Find the king's route to reach both pawns in time."
+  },
+      "fen": "7K/8/k1P5/7p/8/8/8/8 w - - 0 1",
+      "moves": [
+        "Kg7",
+        "h4",
+        "Kf6",
+        "Kb6",
+        "Ke5",
+        "Kxc6",
+        "Kf4"
+  ],
+  "solutionText": {
+    "ca": "El final de Réti demostra que el rei pot arribar a temps a dos objectius molt allunyats si avança per una diagonal. La clau és combinar l'amenaça sobre el peó rival amb l'avanç cap al teu propi peó.",
+    "es": "El final de Réti demuestra que el rey puede llegar a tiempo a dos objetivos muy alejados si avanza por una diagonal. La clave es combinar la amenaza sobre el peón rival con el avance hacia tu propio peón.",
+    "en": "The Réti endgame shows that a king can reach two distant objectives in time by advancing along a diagonal. The key is to combine the threat against the opposing pawn with progress towards your own pawn."
+  },
+  "coordinates": {
+    "lat": "N 41° XX.XXX",
+    "lon": "E 002° XX.XXX"
+  }
+}
