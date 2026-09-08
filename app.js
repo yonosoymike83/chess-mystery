@@ -2079,21 +2079,6 @@ function updateRetiAnimation() {
         retiOverlaySvg.appendChild(line);
     }
 
-    /* Resaltado verde de una casilla. */
-    function drawGreenSquare(file, rank) {
-        const p = squarePosition(file, rank);
-        const rect = document.createElementNS(ns, "rect");
-
-        rect.setAttribute("x", p.x);
-        rect.setAttribute("y", p.y);
-        rect.setAttribute("width", size);
-        rect.setAttribute("height", size);
-        rect.setAttribute("fill", "#4f9d5d");
-        rect.setAttribute("fill-opacity", "0.28");
-
-        retiOverlaySvg.appendChild(rect);
-    }
-
     /* ---------------------------------------------------------
        PRIMERA ANIMACIÓN — después de Kg7
        --------------------------------------------------------- */
@@ -2107,7 +2092,7 @@ function updateRetiAnimation() {
 
         /* Punto de partida y dirección de la ruta del rey. */
         drawCircle(3, 6);
-        drawGreenArrow(3, 6, 7, 8);
+        drawGreenArrow(7, 8, 3, 6);
     }
 
     /* ---------------------------------------------------------
@@ -2118,9 +2103,7 @@ function updateRetiAnimation() {
         /* Recuadro inferior: f3-h1 */
         drawOutline(5, 3, 3, 3);
 
-        /* Casillas destacadas: e5 y f4 */
-        drawGreenSquare(4, 5);
-        drawGreenSquare(5, 4);
+        /* Sin casillas sombreadas en la animación final. */
     }
 }
 
