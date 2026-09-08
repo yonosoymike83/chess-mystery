@@ -270,29 +270,17 @@ async function loadPuzzle() {
 
 
     /* -----------------------------------------------------
-       Animación opcional
+       Overlay de animaciones e indicador de jaque
        ----------------------------------------------------- */
 
-    if (
-        hasAnimation("pawn-square") ||
-        hasAnimation("critical-squares")
-    ) {
+    createOverlay();
 
-        createOverlay();
+    setTimeout(() => {
 
-        setTimeout(() => {
+        updateAnimation();
+        updateCheckSquare();
 
-            if (hasAnimation("pawn-square")) {
-                updatePawnSquare();
-            }
-
-            if (hasAnimation("critical-squares")) {
-                updateCriticalSquares();
-            }
-
-        }, 150);
-
-    }
+    }, 150);
 
 }
 
@@ -374,8 +362,13 @@ function loadNextStage() {
         setTimeout(() => {
 
             updatePawnSquare();
+            updateCheckSquare();
 
         }, 100);
+
+    } else {
+
+        setTimeout(updateCheckSquare, 100);
 
     }
 
@@ -465,6 +458,8 @@ function resetBoard() {
         updatePawnSquare();
 
     }
+
+    updateCheckSquare();
 
 }
 
@@ -577,8 +572,13 @@ function handleMove(event) {
             setTimeout(() => {
 
                 updatePawnSquare();
+                updateCheckSquare();
 
             }, 50);
+
+        } else {
+
+            setTimeout(updateCheckSquare, 50);
 
         }
 
@@ -609,6 +609,7 @@ function handleMove(event) {
                     );
 
 
+                    hideCheckSquare();
                     solvePuzzle();
 
                 }, 350);
@@ -684,6 +685,7 @@ function handleMove(event) {
                 setTimeout(() => {
 
                     updatePawnSquare();
+                    updateCheckSquare();
 
                 }, 50);
 
@@ -810,8 +812,13 @@ function handleMove(event) {
             setTimeout(() => {
 
                 updatePawnSquare();
+                updateCheckSquare();
 
             }, 50);
+
+        } else {
+
+            setTimeout(updateCheckSquare, 50);
 
         }
 
@@ -833,6 +840,7 @@ function handleMove(event) {
                 );
 
 
+                hideCheckSquare();
                 solvePuzzle();
 
             }, 350);
@@ -893,6 +901,7 @@ function handleMove(event) {
                 setTimeout(() => {
 
                     updatePawnSquare();
+                    updateCheckSquare();
 
                 }, 50);
 
@@ -916,6 +925,7 @@ function handleMove(event) {
                     );
 
 
+                    hideCheckSquare();
                     solvePuzzle();
 
                 }, 350);
@@ -959,6 +969,7 @@ function handleMove(event) {
         );
 
 
+        hideCheckSquare();
         solvePuzzle();
 
         return;
@@ -988,6 +999,8 @@ function handleMove(event) {
    ========================================================= */
 
 function solvePuzzle() {
+
+    hideCheckSquare();
 
     document.getElementById(
         "status"
@@ -1211,13 +1224,8 @@ function createOverlay() {
         "resize",
         () => {
 
-            if (hasAnimation("pawn-square")) {
-                updatePawnSquare();
-            }
-
-            if (hasAnimation("critical-squares")) {
-                updateCriticalSquares();
-            }
+            updateAnimation();
+            updateCheckSquare();
 
         }
     );
@@ -1659,15 +1667,49 @@ function updatePawnSquare() {
 
 
 /* =========================================================
+   ACTUALIZAR ANIMACIÓN SEGÚN EL TIPO
+   ========================================================= */
+
+function updateAnimation() {
+
+    if (
+        hasAnimation("pawn-square")
+    ) {
+
+        updatePawnSquare();
+
+        return;
+    }
+
+
+    if (
+        hasAnimation("critical-squares")
+    ) {
+
+        updateCriticalSquares();
+
+    }
+
+}
+
+
+/* =========================================================
    ACTUALIZAR CASILLAS CRÍTICAS
    ========================================================= */
 
 function updateCriticalSquares() {
 
     if (
-        !hasAnimation("critical-squares") ||
-        !overlaySvg ||
-        !board
+        !hasAnimation("critical-squares")
+    ) {
+
+        return;
+    }
+
+
+    if (
+        !board ||
+        !overlaySvg
     ) {
 
         return;
@@ -1684,13 +1726,14 @@ function updateCriticalSquares() {
 
 
     /*
-     * Rectángulo fijo sobre e6, f6 y g6.
+     * Rectángulo fijo sobre e6-f6-g6.
+     * e = file 4, g = file 6, rank 6.
      */
 
     const topLeft =
         squarePoint(
             4,
-            5,
+            6,
             boardRect,
             parentRect
         );
@@ -1699,11 +1742,33 @@ function updateCriticalSquares() {
     const bottomRight =
         squarePoint(
             7,
-            4,
+            5,
             boardRect,
             parentRect
         );
 
+
+    const x =
+        topLeft.x;
+
+
+    const y =
+        topLeft.y;
+
+
+    const width =
+        bottomRight.x -
+        topLeft.x;
+
+
+    const height =
+        bottomRight.y -
+        topLeft.y;
+
+
+    /*
+     * Limpiar el rectángulo anterior.
+     */
 
     overlaySvg.innerHTML =
         "";
@@ -1718,27 +1783,25 @@ function updateCriticalSquares() {
 
     rect.setAttribute(
         "x",
-        topLeft.x
+        x
     );
 
 
     rect.setAttribute(
         "y",
-        topLeft.y
+        y
     );
 
 
     rect.setAttribute(
         "width",
-        bottomRight.x -
-        topLeft.x
+        width
     );
 
 
     rect.setAttribute(
         "height",
-        bottomRight.y -
-        topLeft.y
+        height
     );
 
 
@@ -1777,7 +1840,7 @@ function updateCriticalSquares() {
 
 
     rect.style.transition =
-        "opacity 0.3s ease";
+        "opacity 0.25s ease";
 
 
     overlaySvg.appendChild(
@@ -1792,6 +1855,124 @@ function updateCriticalSquares() {
 
     });
 
+}
+
+
+/* =========================================================
+   INDICADOR DE JAQUE
+   ========================================================= */
+
+function getCheckedKingSquare() {
+
+    if (!game || !game.board) {
+        return null;
+    }
+
+    const inCheck =
+        typeof game.isCheck === "function"
+            ? game.isCheck()
+            : typeof game.inCheck === "function"
+                ? game.inCheck()
+                : false;
+
+    if (!inCheck) {
+        return null;
+    }
+
+    const color = game.turn();
+    const state = game.board();
+
+    for (let rankIndex = 0; rankIndex < 8; rankIndex++) {
+        for (let fileIndex = 0; fileIndex < 8; fileIndex++) {
+
+            const piece = state[rankIndex][fileIndex];
+
+            if (
+                piece &&
+                piece.type === "k" &&
+                piece.color === color
+            ) {
+                return {
+                    file: fileIndex,
+                    rank: 7 - rankIndex
+                };
+            }
+        }
+    }
+
+    return null;
+}
+
+
+function updateCheckSquare() {
+
+    if (!overlaySvg || !board || !game) {
+        return;
+    }
+
+    const previous =
+        overlaySvg.querySelector("#checkKingOverlay");
+
+    if (previous) {
+        previous.remove();
+    }
+
+    const king = getCheckedKingSquare();
+
+    if (!king) {
+        return;
+    }
+
+    const boardRect =
+        board.getBoundingClientRect();
+
+    const parentRect =
+        board.parentElement.getBoundingClientRect();
+
+    const squareSize =
+        boardRect.width / 8;
+
+    const point =
+        squarePoint(
+            king.file,
+            king.rank,
+            boardRect,
+            parentRect
+        );
+
+    const rect =
+        document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "rect"
+        );
+
+    rect.id = "checkKingOverlay";
+
+    rect.setAttribute("x", point.x + 2);
+    rect.setAttribute("y", point.y + 2);
+    rect.setAttribute("width", squareSize - 4);
+    rect.setAttribute("height", squareSize - 4);
+    rect.setAttribute("fill", "rgba(220,0,0,0.08)");
+    rect.setAttribute("stroke", "#d32f2f");
+    rect.setAttribute("stroke-width", "4");
+    rect.setAttribute("stroke-linejoin", "round");
+
+    overlaySvg.appendChild(rect);
+}
+
+
+function hideCheckSquare() {
+
+    if (!overlaySvg) {
+        return;
+    }
+
+    const rect =
+        overlaySvg.querySelector("#checkKingOverlay");
+
+    if (rect) {
+        rect.remove();
+    }
 }
 
 
@@ -1821,13 +2002,16 @@ window.addEventListener(
     "resize",
     () => {
 
-        if (hasAnimation("pawn-square")) {
-            updatePawnSquare();
+        if (
+            hasAnimation("pawn-square") ||
+            hasAnimation("critical-squares")
+        ) {
+
+            updateAnimation();
+
         }
 
-        if (hasAnimation("critical-squares")) {
-            updateCriticalSquares();
-        }
+        updateCheckSquare();
 
     }
 );
