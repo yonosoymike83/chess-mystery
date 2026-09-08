@@ -11,16 +11,15 @@
     {
   "fen": "4k3/R7/8/3KP3/8/6r1/8/8 b - - 0 1",
   "moves": [
-    "Rg5+",
+    "Rg6",
+    "e6",
+    "Rg1",
     "Kd6",
-    "Rg6+",
-    "Ke7",
-    "Rg7+",
-    "Kf8",
-    "Rg8+",
-    "Ke7",
-    "Rg7+",
-    "Kf8"
+    "Rd1+",
+    "Ke5",
+    "Re1+",
+    "Kf6",
+    "Rf1+"
   ],
   "solutionText": {
     "ca": "La defensa de Philidor consisteix a mantenir la torre a la tercera fila mentre el rei rival encara no ha arribat a la sisena. Quan el peó avança, la torre pot donar escacs des de darrere i impedir la coronació.",
