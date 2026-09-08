@@ -908,6 +908,9 @@ function handleMove(event) {
                 true
             );
 
+            // Actualizar el indicador después de la respuesta automática.
+            updateCheckHighlight();
+
 
             currentStep++;
 
