@@ -3,161 +3,21 @@ let board;
 let game;
 let currentStep = 0;
 let currentStage = 0;
-
-
-/* =========================================================
-   INDICADOR GLOBAL DE JAQUE
-   ---------------------------------------------------------
-   Independiente de las animaciones SVG. Se dibuja sobre el
-   documento para que nunca sea borrado por updateAnimation().
-   ========================================================= */
-
-let checkIndicator;
-let checkIndicatorTimer;
-let checkIndicatorInstalled = false;
-
-function ensureCheckIndicator() {
-
-    if (checkIndicator) return;
-
-    checkIndicator = document.createElement("div");
-    checkIndicator.id = "chessCheckIndicator";
-
-    Object.assign(checkIndicator.style, {
-        position: "fixed",
-        display: "none",
-        boxSizing: "border-box",
-        pointerEvents: "none",
-        zIndex: "999999",
-        border: "4px solid #e53935",
-        background: "rgba(229,57,53,0.10)",
-        borderRadius: "3px"
-    });
-
-    document.body.appendChild(checkIndicator);
+/* JAQUE: resaltado directo mediante ::part de chess-board. También elimina el resaltado amarillo del arrastre. */
+let checkHighlightStyle = null;
+const chessSquares = [];
+for (let r=1;r<=8;r++){for(const f of 'abcdefgh')chessSquares.push(f+r);}
+function updateCheckHighlight(){
+ if(!checkHighlightStyle)return;
+ let css=chessSquares.map(s=>`chess-board::part(${s}){box-shadow:none !important;}`).join('\n');
+ if(game&&board){
+  let check=false;
+  try{check=typeof game.isCheck==='function'?game.isCheck():(typeof game.inCheck==='function'?game.inCheck():typeof game.in_check==='function'?game.in_check():false);}catch(e){}
+  if(check){const a=game.board(),c=game.turn();let k=null;for(let r=0;r<8&&!k;r++){for(let f=0;f<8;f++){const q=a[r][f];if(q&&q.type==='k'&&q.color===c){k='abcdefgh'[f]+(8-r);break;}}}if(k)css+=`\nchess-board::part(${k}){box-shadow:inset 0 0 0 4px #e53935 !important;}`;}
+ }
+ checkHighlightStyle.textContent=css;
 }
-
-function hideCheckIndicator() {
-
-    if (checkIndicator) {
-        checkIndicator.style.display = "none";
-    }
-}
-
-function scheduleCheckIndicator() {
-
-    ensureCheckIndicator();
-
-    clearTimeout(checkIndicatorTimer);
-
-    checkIndicatorTimer = setTimeout(() => {
-        updateCheckIndicator();
-    }, 80);
-}
-
-function updateCheckIndicator() {
-
-    ensureCheckIndicator();
-
-    if (!game || !board) {
-        hideCheckIndicator();
-        return;
-    }
-
-    let inCheck = false;
-
-    try {
-        if (typeof game.isCheck === "function") {
-            inCheck = game.isCheck();
-        } else if (typeof game.inCheck === "function") {
-            inCheck = game.inCheck();
-        }
-    } catch (e) {
-        inCheck = false;
-    }
-
-    if (!inCheck) {
-        hideCheckIndicator();
-        return;
-    }
-
-    const position = game.board();
-    const kingColor = game.turn();
-    let kingFile = -1;
-    let kingRank = -1;
-
-    for (let rank = 0; rank < 8; rank++) {
-        for (let file = 0; file < 8; file++) {
-            const piece = position[rank][file];
-            if (
-                piece &&
-                piece.type === "k" &&
-                piece.color === kingColor
-            ) {
-                kingFile = file;
-                kingRank = rank;
-                break;
-            }
-        }
-        if (kingFile !== -1) break;
-    }
-
-    if (kingFile === -1) {
-        hideCheckIndicator();
-        return;
-    }
-
-    const rect = board.getBoundingClientRect();
-    const square = Math.min(rect.width, rect.height) / 8;
-
-    if (!square || rect.width <= 0 || rect.height <= 0) {
-        hideCheckIndicator();
-        return;
-    }
-
-    const orientation =
-        String(board.orientation || board.getAttribute("orientation") || "white")
-            .toLowerCase();
-
-    const black = orientation === "black";
-    const displayFile = black ? 7 - kingFile : kingFile;
-    const displayRank = black ? kingRank : 7 - kingRank;
-
-    checkIndicator.style.left =
-        `${rect.left + displayFile * square + 2}px`;
-
-    checkIndicator.style.top =
-        `${rect.top + displayRank * square + 2}px`;
-
-    checkIndicator.style.width =
-        `${square - 4}px`;
-
-    checkIndicator.style.height =
-        `${square - 4}px`;
-
-    checkIndicator.style.display = "block";
-}
-
-function installCheckIndicator() {
-
-    ensureCheckIndicator();
-
-    if (checkIndicatorInstalled || !board) return;
-
-    const originalSetPosition = board.setPosition;
-
-    if (typeof originalSetPosition === "function") {
-
-        board.setPosition = function (...args) {
-
-            const result = originalSetPosition.apply(this, args);
-            scheduleCheckIndicator();
-            return result;
-        };
-    }
-
-    checkIndicatorInstalled = true;
-}
+function installCheckHighlight(){if(checkHighlightStyle)return;checkHighlightStyle=document.createElement('style');checkHighlightStyle.id='checkHighlightStyle';document.head.appendChild(checkHighlightStyle);updateCheckHighlight();}
 
 
 let language =
@@ -390,8 +250,7 @@ async function loadPuzzle() {
             "board"
         );
 
-
-    installCheckIndicator();
+    installCheckHighlight();
 
 
     /*
@@ -406,7 +265,7 @@ async function loadPuzzle() {
         game.fen()
     );
 
-    scheduleCheckIndicator();
+    updateCheckHighlight();
 
 
     board.draggablePieces = true;
@@ -501,6 +360,8 @@ function loadNextStage() {
         true
     );
 
+    updateCheckHighlight();
+
 
     /* -----------------------------------------------------
        Estado
@@ -587,6 +448,8 @@ function resetBoard() {
     board.setPosition(
         game.fen()
     );
+
+    updateCheckHighlight();
 
 
     document.getElementById(
@@ -720,6 +583,8 @@ function handleMove(event) {
             true
         );
 
+        updateCheckHighlight()
+
 
         /*
          * Actualizar animación
@@ -762,6 +627,8 @@ function handleMove(event) {
                         game.fen(),
                         false
                     );
+
+                        updateCheckHighlight()
 
 
                     solvePuzzle();
@@ -953,6 +820,8 @@ function handleMove(event) {
             true
         );
 
+        updateCheckHighlight()
+
 
         /*
          * Actualizar animación
@@ -986,6 +855,8 @@ function handleMove(event) {
                     game.fen(),
                     false
                 );
+
+                    updateCheckHighlight()
 
 
                 solvePuzzle();
@@ -1070,6 +941,8 @@ function handleMove(event) {
                         false
                     );
 
+                        updateCheckHighlight()
+
 
                     solvePuzzle();
 
@@ -1113,6 +986,8 @@ function handleMove(event) {
             true
         );
 
+        updateCheckHighlight()
+
 
         solvePuzzle();
 
@@ -1143,8 +1018,6 @@ function handleMove(event) {
    ========================================================= */
 
 function solvePuzzle() {
-
-    hideCheckIndicator();
 
     document.getElementById(
         "status"
@@ -2031,8 +1904,6 @@ window.addEventListener(
             updateAnimation();
 
         }
-
-        scheduleCheckIndicator();
 
     }
 );
