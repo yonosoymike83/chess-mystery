@@ -1718,6 +1718,16 @@ function updateAnimation() {
 
         updateCriticalSquares();
 
+        return;
+    }
+
+
+    if (
+        hasAnimation("reti")
+    ) {
+
+        updateRetiAnimation();
+
     }
 
 }
