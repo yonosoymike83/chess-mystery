@@ -9,20 +9,18 @@
     "es": "Encuentra la defensa correcta e impide que el rey rival llegue a la sexta fila.",
     "en": "Find the correct defense and prevent the opposing king from reaching the sixth rank."
     {
-      "fen": "4k3/R7/8/3KP3/8/6r1/8/8 b - - 0 1",
-      "moves": [
-        "Rg5+",
-        "Kd6",
-        "Rg6+",
-        "Ke7",
-        "Rg7+",
-        "Kf8",
-        "Rg8+",
-        "Ke7",
-        "Rg7+",
-        "Kf8"
-      ]
-    }
+  "fen": "4k3/R7/8/3KP3/8/6r1/8/8 b - - 0 1",
+  "moves": [
+    "Rg5+",
+    "Kd6",
+    "Rg6+",
+    "Ke7",
+    "Rg7+",
+    "Kf8",
+    "Rg8+",
+    "Ke7",
+    "Rg7+",
+    "Kf8"
   ],
   "solutionText": {
     "ca": "La defensa de Philidor consisteix a mantenir la torre a la tercera fila mentre el rei rival encara no ha arribat a la sisena. Quan el peó avança, la torre pot donar escacs des de darrere i impedir la coronació.",
