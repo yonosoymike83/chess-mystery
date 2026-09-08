@@ -3,22 +3,6 @@ let board;
 let game;
 let currentStep = 0;
 let currentStage = 0;
-/* JAQUE: resaltado directo mediante ::part de chess-board. También elimina el resaltado amarillo del arrastre. */
-let checkHighlightStyle = null;
-const chessSquares = [];
-for (let r=1;r<=8;r++){for(const f of 'abcdefgh')chessSquares.push(f+r);}
-function updateCheckHighlight(){
- if(!checkHighlightStyle)return;
- let css=chessSquares.map(s=>`chess-board::part(${s}){box-shadow:none !important;}`).join('\n');
- if(game&&board){
-  let check=false;
-  try{check=typeof game.isCheck==='function'?game.isCheck():(typeof game.inCheck==='function'?game.inCheck():typeof game.in_check==='function'?game.in_check():false);}catch(e){}
-  if(check){const a=game.board(),c=game.turn();let k=null;for(let r=0;r<8&&!k;r++){for(let f=0;f<8;f++){const q=a[r][f];if(q&&q.type==='k'&&q.color===c){k='abcdefgh'[f]+(8-r);break;}}}if(k)css+=`\nchess-board::part(${k}){box-shadow:inset 0 0 0 4px #e53935 !important;}`;}
- }
- checkHighlightStyle.textContent=css;
-}
-function installCheckHighlight(){if(checkHighlightStyle)return;checkHighlightStyle=document.createElement('style');checkHighlightStyle.id='checkHighlightStyle';document.head.appendChild(checkHighlightStyle);updateCheckHighlight();}
-
 
 let language =
     localStorage.getItem("language");
@@ -250,8 +234,6 @@ async function loadPuzzle() {
             "board"
         );
 
-    installCheckHighlight();
-
 
     /*
      * Posición inicial.
@@ -264,8 +246,6 @@ async function loadPuzzle() {
         "position",
         game.fen()
     );
-
-    updateCheckHighlight();
 
 
     board.draggablePieces = true;
@@ -295,7 +275,8 @@ async function loadPuzzle() {
 
     if (
         hasAnimation("pawn-square") ||
-        hasAnimation("critical-squares")
+        hasAnimation("critical-squares") ||
+        hasAnimation("reti")
     ) {
 
         createOverlay();
@@ -359,8 +340,6 @@ function loadNextStage() {
         game.fen(),
         true
     );
-
-    updateCheckHighlight();
 
 
     /* -----------------------------------------------------
@@ -448,8 +427,6 @@ function resetBoard() {
     board.setPosition(
         game.fen()
     );
-
-    updateCheckHighlight();
 
 
     document.getElementById(
@@ -583,8 +560,6 @@ function handleMove(event) {
             true
         );
 
-        updateCheckHighlight()
-
 
         /*
          * Actualizar animación
@@ -627,8 +602,6 @@ function handleMove(event) {
                         game.fen(),
                         false
                     );
-
-                        updateCheckHighlight()
 
 
                     solvePuzzle();
@@ -690,10 +663,6 @@ function handleMove(event) {
                 game.fen(),
                 true
             );
-
-            // Actualizar el indicador también después de la jugada automática.
-            // Esto evita que un jaque quede marcado hasta la siguiente jugada del jugador.
-            updateCheckHighlight();
 
 
             currentStep++;
@@ -824,8 +793,6 @@ function handleMove(event) {
             true
         );
 
-        updateCheckHighlight()
-
 
         /*
          * Actualizar animación
@@ -859,8 +826,6 @@ function handleMove(event) {
                     game.fen(),
                     false
                 );
-
-                    updateCheckHighlight()
 
 
                 solvePuzzle();
@@ -908,9 +873,6 @@ function handleMove(event) {
                 true
             );
 
-            // Actualizar el indicador después de la respuesta automática.
-            updateCheckHighlight();
-
 
             currentStep++;
 
@@ -947,8 +909,6 @@ function handleMove(event) {
                         game.fen(),
                         false
                     );
-
-                        updateCheckHighlight()
 
 
                     solvePuzzle();
@@ -992,8 +952,6 @@ function handleMove(event) {
             game.fen(),
             true
         );
-
-        updateCheckHighlight()
 
 
         solvePuzzle();
@@ -1101,7 +1059,8 @@ function solvePuzzle() {
 
     if (
         hasAnimation("pawn-square") ||
-        hasAnimation("critical-squares")
+        hasAnimation("critical-squares") ||
+        hasAnimation("reti")
     ) {
 
         hidePawnSquare();
@@ -1707,6 +1666,16 @@ function updateAnimation() {
 
         updateCriticalSquares();
 
+        return;
+    }
+
+
+    if (
+        hasAnimation("reti")
+    ) {
+
+        updateRetiAnimation();
+
     }
 
 }
@@ -1878,6 +1847,170 @@ function updateCriticalSquares() {
 
 
 /* =========================================================
+   ANIMACIÓN DEL FINAL DE RÉTI
+   ========================================================= */
+
+function updateRetiAnimation() {
+
+    if (!hasAnimation("reti") || !board || !overlaySvg || !game) {
+        return;
+    }
+
+    const stage = getCurrentStage();
+    if (!stage || !Array.isArray(stage.moves)) {
+        return;
+    }
+
+    const step = currentStep;
+    const finalStep = stage.moves.length;
+
+    /* Antes de la primera jugada no mostramos nada. */
+    if (step < 1) {
+        overlaySvg.innerHTML = "";
+        return;
+    }
+
+    const boardRect = board.getBoundingClientRect();
+    const parentRect = board.parentElement.getBoundingClientRect();
+
+    overlaySvg.innerHTML = "";
+
+    const ns = "http://www.w3.org/2000/svg";
+
+    /* -----------------------------------------------------
+       Flechas SVG
+       ----------------------------------------------------- */
+    const defs = document.createElementNS(ns, "defs");
+
+    const blueMarker = document.createElementNS(ns, "marker");
+    blueMarker.setAttribute("id", "retiBlueArrow");
+    blueMarker.setAttribute("viewBox", "0 0 10 10");
+    blueMarker.setAttribute("refX", "8");
+    blueMarker.setAttribute("refY", "5");
+    blueMarker.setAttribute("markerWidth", "7");
+    blueMarker.setAttribute("markerHeight", "7");
+    blueMarker.setAttribute("orient", "auto-start-reverse");
+
+    const bluePath = document.createElementNS(ns, "path");
+    bluePath.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
+    bluePath.setAttribute("fill", "#4169a1");
+    blueMarker.appendChild(bluePath);
+
+    const greenMarker = document.createElementNS(ns, "marker");
+    greenMarker.setAttribute("id", "retiGreenArrow");
+    greenMarker.setAttribute("viewBox", "0 0 10 10");
+    greenMarker.setAttribute("refX", "8");
+    greenMarker.setAttribute("refY", "5");
+    greenMarker.setAttribute("markerWidth", "7");
+    greenMarker.setAttribute("markerHeight", "7");
+    greenMarker.setAttribute("orient", "auto-start-reverse");
+
+    const greenPath = document.createElementNS(ns, "path");
+    greenPath.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
+    greenPath.setAttribute("fill", "#4f9d5d");
+    greenMarker.appendChild(greenPath);
+
+    defs.appendChild(blueMarker);
+    defs.appendChild(greenMarker);
+    overlaySvg.appendChild(defs);
+
+    function center(file, rank) {
+        const p = squarePoint(file, rank, boardRect, parentRect);
+        const size = boardRect.width / 8;
+        return { x: p.x + size / 2, y: p.y + size / 2 };
+    }
+
+    function drawArrow(fromFile, fromRank, toFile, toRank, color, markerId, width) {
+        const a = center(fromFile, fromRank);
+        const b = center(toFile, toRank);
+        const line = document.createElementNS(ns, "line");
+        line.setAttribute("x1", a.x);
+        line.setAttribute("y1", a.y);
+        line.setAttribute("x2", b.x);
+        line.setAttribute("y2", b.y);
+        line.setAttribute("stroke", color);
+        line.setAttribute("stroke-width", width || "10");
+        line.setAttribute("stroke-linecap", "round");
+        line.setAttribute("marker-end", `url(#${markerId})`);
+        line.setAttribute("opacity", "0.88");
+        overlaySvg.appendChild(line);
+    }
+
+    function drawCircle(file, rank, color) {
+        const p = center(file, rank);
+        const size = boardRect.width / 8;
+        const circle = document.createElementNS(ns, "circle");
+        circle.setAttribute("cx", p.x);
+        circle.setAttribute("cy", p.y);
+        circle.setAttribute("r", size * 0.34);
+        circle.setAttribute("fill", "none");
+        circle.setAttribute("stroke", color);
+        circle.setAttribute("stroke-width", "5");
+        circle.setAttribute("opacity", "0.9");
+        overlaySvg.appendChild(circle);
+    }
+
+    function drawSquare(file, rank, color) {
+        const p = squarePoint(file, rank, boardRect, parentRect);
+        const size = boardRect.width / 8;
+        const rect = document.createElementNS(ns, "rect");
+        rect.setAttribute("x", p.x);
+        rect.setAttribute("y", p.y);
+        rect.setAttribute("width", size);
+        rect.setAttribute("height", size);
+        rect.setAttribute("fill", color);
+        rect.setAttribute("fill-opacity", "0.28");
+        overlaySvg.appendChild(rect);
+    }
+
+    const blue = "#4169a1";
+    const green = "#4f9d5d";
+
+    if (step >= 2 && step < finalStep) {
+        /* La primera animación desaparece justo después del segundo movimiento. */
+        overlaySvg.innerHTML = "";
+        overlaySvg.style.opacity = "0";
+        return;
+    }
+
+    if (step < finalStep) {
+
+        /* Ruta diagonal del rey: h8-g7-f6-e5-d6. */
+        drawArrow(7, 8, 6, 7, green, "retiGreenArrow", 10);
+        drawArrow(6, 7, 5, 6, green, "retiGreenArrow", 10);
+        drawArrow(5, 6, 4, 5, green, "retiGreenArrow", 10);
+        drawArrow(4, 5, 3, 6, green, "retiGreenArrow", 10);
+        drawCircle(3, 6, green);
+
+        /* Ruta del peón negro alrededor del tablero. */
+        drawArrow(7, 5, 4, 5, blue, "retiBlueArrow", 10);
+        drawArrow(4, 5, 4, 1, blue, "retiBlueArrow", 10);
+        drawArrow(4, 1, 7, 1, blue, "retiBlueArrow", 10);
+        drawArrow(7, 1, 7, 5, blue, "retiBlueArrow", 10);
+
+        /* Pequeño ciclo defensivo del rey negro. */
+        drawArrow(1, 7, 2, 8, blue, "retiBlueArrow", 10);
+        drawArrow(2, 8, 1, 7, blue, "retiBlueArrow", 10);
+
+    } else {
+
+        /* Tras la última jugada: casillas clave del rey. */
+        drawSquare(4, 5, green); // e5
+        drawSquare(5, 4, green); // f4
+
+        /* Ruta final del peón negro. */
+        drawArrow(7, 4, 7, 1, blue, "retiBlueArrow", 10);
+        drawArrow(7, 1, 5, 1, blue, "retiBlueArrow", 10);
+        drawArrow(5, 1, 5, 3, blue, "retiBlueArrow", 10);
+        drawArrow(5, 3, 7, 3, blue, "retiBlueArrow", 10);
+        drawArrow(7, 3, 7, 4, blue, "retiBlueArrow", 10);
+    }
+
+    overlaySvg.style.opacity = "1";
+}
+
+
+/* =========================================================
    OCULTAR CUADRADO
    ========================================================= */
 
@@ -1905,7 +2038,8 @@ window.addEventListener(
 
         if (
             hasAnimation("pawn-square") ||
-            hasAnimation("critical-squares")
+            hasAnimation("critical-squares") ||
+            hasAnimation("reti")
         ) {
 
             updateAnimation();
