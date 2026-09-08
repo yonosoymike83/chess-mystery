@@ -5,9 +5,9 @@
     "en": "Rook's Pawn"
   },
   "description": {
-    "ca": "Resol les tres posicions i demostra que saps aprofitar la força d'un peó avançat.",
-    "es": "Resuelve las tres posiciones y demuestra que sabes aprovechar la fuerza de un peón avanzado.",
-    "en": "Solve all three positions and demonstrate how to use the power of an advanced pawn."
+     "ca": "Resol les dues posicions i descobreix la força de l'empenta lateral de la torre contra un peó de Torre.",
+    "es": "Resuelve las dos posiciones y descubre la fuerza del empuje lateral de la torre contra un peón de Torre.",
+    "en": "Solve both positions and discover the power of the rook's lateral checking technique against a rook's pawn."
   },
 
   "stages": [
@@ -51,9 +51,9 @@
   },
 
   "solutionText": {
-    "ca": "L'oposició es guanya quan, amb els reis enfrontats, aconsegueixes que sigui el rival qui hagi de moure. Així pots obligar-lo a cedir terreny i acostar el teu peó a la coronació.",
-    "es": "La oposición se gana cuando, estando los reyes enfrentados, consigues que sea el rival quien tenga que mover. Así puedes obligarlo a ceder terreno y acercar tu peón a la coronación.",
-    "en": "You win the opposition when, with the kings facing each other, you force your opponent to move. This allows you to make them give ground and bring your pawn closer to promotion."
+    "ca": "Contra un peó de Torre, la torre defensora no sempre ha d'empènyer el peó des del darrere. L'empenta lateral consisteix a donar escacs des del costat per obligar el rei defensor a allunyar-se del peó. És especialment important perquè el rei pot intentar amagar-se davant del peó a la cantonada i provocar un ofegat. Per això, en aquestes posicions, cal controlar tant el rei com la casella de coronació.",
+    "es": "Contra un peón de Torre, la torre defensora no siempre debe empujar el peón desde atrás. El empuje lateral consiste en dar jaques desde un lado para obligar al rey defensor a alejarse del peón. Es especialmente importante porque el rey puede intentar esconderse delante del peón en la esquina y provocar un ahogado. Por eso, en estas posiciones, hay que controlar tanto al rey como la casilla de coronación.",
+    "en": "Against a rook's pawn, the defending rook does not always have to stop the pawn from behind. The lateral checking technique consists of giving checks from the side to force the defending king away from the pawn. This is especially important because the king may try to hide in front of the pawn in the corner and force a stalemate. Therefore, these positions require control of both the king and the promotion square."
   },
 
   "coordinates": {
