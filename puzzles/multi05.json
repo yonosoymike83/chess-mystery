@@ -1,7 +1,7 @@
 {
   "title": {
-    "ca": "Lucena: el Pont",
-    "es": "Lucena: el Puente",
+    "ca": "Lucena: el pont",
+    "es": "Lucena: el puente",
     "en": "Lucena: The Bridge"
   },
   "description": {
@@ -9,27 +9,27 @@
     "es": "Construye el puente y encuentra la forma de detener los jaques de la torre negra para conseguir la coronación.",
     "en": "Build the bridge and find a way to stop the black rook's checks and promote the pawn."
   },
-       "fen": "3K4/3P1k2/8/8/8/8/2r5/4R3 w - - 1 2",
-      "moves": [
-        "Rf1+",
-        "Kg7",
-        "Rf4",
-        "Rc1",
-        "Ke7",
-        "Re1+",
-        "Kd6",
-        "Rd1+",
-        "Ke6",
-        "Re1+",
-        "Kd5",
-        "Rd1+",
-        "Rd4"
-   ],
+  "fen": "3K4/3P1k2/8/8/8/8/2r5/4R3 w - - 1 2",
+  "moves": [
+    "Rf1+",
+    "Kg7",
+    "Rf4",
+    "Rc1",
+    "Ke7",
+    "Re1+",
+    "Kd6",
+    "Rd1+",
+    "Ke6",
+    "Re1+",
+    "Kd5",
+    "Rd1+",
+    "Rd4"
+  ],
   "solutionText": {
     "ca": "La idea de Lucena és construir un pont amb la torre perquè el rei quedi protegit dels escacs laterals. Un cop creat aquest pont, el rei pot avançar amb seguretat mentre la torre impedeix que els escacs de la torre rival aturin la coronació.",
     "es": "La idea de Lucena es construir un puente con la torre para que el rey quede protegido de los jaques laterales. Una vez creado el puente, el rey puede avanzar con seguridad mientras la torre impide que los jaques de la torre rival detengan la coronación.",
     "en": "The Lucena idea is to build a bridge with the rook so that the king is protected from lateral checks. Once the bridge is built, the king can advance safely while the rook prevents the opposing rook's checks from stopping the promotion."
-}
+  },
   "coordinates": {
     "lat": "N 41° XX.XXX",
     "lon": "E 002° XX.XXX"
