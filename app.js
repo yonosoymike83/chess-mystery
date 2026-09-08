@@ -1944,6 +1944,7 @@ function clearRetiOverlay() {
    ========================================================= */
 
 function updateRetiAnimation() {
+
     if (!hasAnimation("reti") || !board || !game) {
         clearRetiOverlay();
         return;
@@ -1952,7 +1953,10 @@ function updateRetiAnimation() {
     createRetiOverlay();
 
     const stage = getCurrentStage();
-    const moves = stage && Array.isArray(stage.moves) ? stage.moves : puzzle.moves;
+    const moves = stage && Array.isArray(stage.moves)
+        ? stage.moves
+        : puzzle.moves;
+
     if (!Array.isArray(moves)) {
         clearRetiOverlay();
         return;
@@ -1961,13 +1965,13 @@ function updateRetiAnimation() {
     const step = currentStep;
     const finalStep = moves.length;
 
-    /* Nada antes de la primera jugada. */
+    /* Antes de la primera jugada: nada. */
     if (step < 1) {
         clearRetiOverlay();
         return;
     }
 
-    /* La primera animación solo vive después del primer movimiento. */
+    /* La primera animación solo se muestra después del primer movimiento. */
     if (step >= 2 && step < finalStep) {
         clearRetiOverlay();
         return;
@@ -1977,101 +1981,146 @@ function updateRetiAnimation() {
     if (!boardRect) return;
 
     const ns = "http://www.w3.org/2000/svg";
+    const size = boardRect.width / 8;
+
     retiOverlaySvg.innerHTML = "";
     retiOverlaySvg.style.display = "block";
 
-    function center(file, rank) {
+    function squarePosition(file, rank) {
         return {
-            x: (file + 0.5) * boardRect.width / 8,
-            y: (8 - rank - 0.5) * boardRect.height / 8
+            x: file * size,
+            y: (8 - rank) * size
         };
     }
 
-    function drawArrow(fromFile, fromRank, toFile, toRank, color, markerId) {
-        const a = center(fromFile, fromRank);
-        const b = center(toFile, toRank);
-        const line = document.createElementNS(ns, "line");
-        line.setAttribute("x1", a.x);
-        line.setAttribute("y1", a.y);
-        line.setAttribute("x2", b.x);
-        line.setAttribute("y2", b.y);
-        line.setAttribute("stroke", color);
-        line.setAttribute("stroke-width", Math.max(7, boardRect.width / 45));
-        line.setAttribute("stroke-linecap", "round");
-        line.setAttribute("marker-end", `url(#${markerId})`);
-        line.setAttribute("opacity", "0.88");
-        retiOverlaySvg.appendChild(line);
+    function squareCenter(file, rank) {
+        return {
+            x: (file + 0.5) * size,
+            y: (8 - rank - 0.5) * size
+        };
     }
 
-    function drawCircle(file, rank, color) {
-        const p = center(file, rank);
-        const circle = document.createElementNS(ns, "circle");
-        circle.setAttribute("cx", p.x);
-        circle.setAttribute("cy", p.y);
-        circle.setAttribute("r", boardRect.width / 8 * 0.34);
-        circle.setAttribute("fill", "none");
-        circle.setAttribute("stroke", color);
-        circle.setAttribute("stroke-width", Math.max(4, boardRect.width / 90));
-        circle.setAttribute("opacity", "0.9");
-        retiOverlaySvg.appendChild(circle);
-    }
-
-    function drawSquare(file, rank, color) {
-        const size = boardRect.width / 8;
+    /* Recuadro de línea fina, sin flechas. */
+    function drawOutline(file, rank, width, height) {
+        const p = squarePosition(file, rank);
         const rect = document.createElementNS(ns, "rect");
-        rect.setAttribute("x", file * size);
-        rect.setAttribute("y", (8 - rank - 1) * size);
-        rect.setAttribute("width", size);
-        rect.setAttribute("height", size);
-        rect.setAttribute("fill", color);
-        rect.setAttribute("fill-opacity", "0.28");
+
+        rect.setAttribute("x", p.x);
+        rect.setAttribute("y", p.y);
+        rect.setAttribute("width", width * size);
+        rect.setAttribute("height", height * size);
+        rect.setAttribute("fill", "none");
+        rect.setAttribute("stroke", "#4169a1");
+        rect.setAttribute("stroke-width", Math.max(2, boardRect.width / 300));
+        rect.setAttribute("opacity", "0.95");
+
         retiOverlaySvg.appendChild(rect);
     }
 
-    const defs = document.createElementNS(ns, "defs");
-    function marker(id, color) {
-        const m = document.createElementNS(ns, "marker");
-        m.setAttribute("id", id);
-        m.setAttribute("viewBox", "0 0 10 10");
-        m.setAttribute("refX", "8");
-        m.setAttribute("refY", "5");
-        m.setAttribute("markerWidth", "7");
-        m.setAttribute("markerHeight", "7");
-        m.setAttribute("orient", "auto");
-        const p = document.createElementNS(ns, "path");
-        p.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
-        p.setAttribute("fill", color);
-        m.appendChild(p);
-        defs.appendChild(m);
+    /* Círculo verde de la posición inicial de la ruta. */
+    function drawCircle(file, rank) {
+        const p = squareCenter(file, rank);
+        const circle = document.createElementNS(ns, "circle");
+
+        circle.setAttribute("cx", p.x);
+        circle.setAttribute("cy", p.y);
+        circle.setAttribute("r", size * 0.34);
+        circle.setAttribute("fill", "none");
+        circle.setAttribute("stroke", "#4f9d5d");
+        circle.setAttribute("stroke-width", Math.max(2, boardRect.width / 150));
+        circle.setAttribute("opacity", "0.72");
+
+        retiOverlaySvg.appendChild(circle);
     }
-    marker("retiBlueArrow", "#4169a1");
-    marker("retiGreenArrow", "#4f9d5d");
-    retiOverlaySvg.appendChild(defs);
 
-    const blue = "#4169a1";
-    const green = "#4f9d5d";
+    /* Una sola flecha verde, con una única punta al final. */
+    function drawGreenArrow(fromFile, fromRank, toFile, toRank) {
+        const a = squareCenter(fromFile, fromRank);
+        const b = squareCenter(toFile, toRank);
 
-    if (step < finalStep) {
-        drawArrow(7, 8, 6, 7, green, "retiGreenArrow");
-        drawArrow(6, 7, 5, 6, green, "retiGreenArrow");
-        drawArrow(5, 6, 4, 5, green, "retiGreenArrow");
-        drawArrow(4, 5, 3, 6, green, "retiGreenArrow");
-        drawCircle(3, 6, green);
+        const defs = document.createElementNS(ns, "defs");
+        const marker = document.createElementNS(ns, "marker");
 
-        drawArrow(7, 5, 4, 5, blue, "retiBlueArrow");
-        drawArrow(4, 5, 4, 1, blue, "retiBlueArrow");
-        drawArrow(4, 1, 7, 1, blue, "retiBlueArrow");
-        drawArrow(7, 1, 7, 5, blue, "retiBlueArrow");
-        drawArrow(1, 7, 2, 8, blue, "retiBlueArrow");
-        drawArrow(2, 8, 1, 7, blue, "retiBlueArrow");
-    } else {
-        drawSquare(4, 5, green);
-        drawSquare(5, 4, green);
-        drawArrow(7, 4, 7, 1, blue, "retiBlueArrow");
-        drawArrow(7, 1, 5, 1, blue, "retiBlueArrow");
-        drawArrow(5, 1, 5, 3, blue, "retiBlueArrow");
-        drawArrow(5, 3, 7, 3, blue, "retiBlueArrow");
-        drawArrow(7, 3, 7, 4, blue, "retiBlueArrow");
+        marker.setAttribute("id", "retiGreenArrow");
+        marker.setAttribute("viewBox", "0 0 10 10");
+        marker.setAttribute("refX", "8");
+        marker.setAttribute("refY", "5");
+        marker.setAttribute("markerWidth", "8");
+        marker.setAttribute("markerHeight", "8");
+        marker.setAttribute("orient", "auto");
+        marker.setAttribute("markerUnits", "strokeWidth");
+
+        const head = document.createElementNS(ns, "path");
+        head.setAttribute("d", "M 0 0 L 10 5 L 0 10 Z");
+        head.setAttribute("fill", "#4f9d5d");
+
+        marker.appendChild(head);
+        defs.appendChild(marker);
+        retiOverlaySvg.appendChild(defs);
+
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const offsetStart = size * 0.30;
+        const offsetEnd = size * 0.34;
+
+        const line = document.createElementNS(ns, "line");
+
+        line.setAttribute("x1", a.x + dx / distance * offsetStart);
+        line.setAttribute("y1", a.y + dy / distance * offsetStart);
+        line.setAttribute("x2", b.x - dx / distance * offsetEnd);
+        line.setAttribute("y2", b.y - dy / distance * offsetEnd);
+        line.setAttribute("stroke", "#4f9d5d");
+        line.setAttribute("stroke-width", Math.max(2.5, boardRect.width / 180));
+        line.setAttribute("stroke-linecap", "round");
+        line.setAttribute("marker-end", "url(#retiGreenArrow)");
+        line.setAttribute("opacity", "0.72");
+
+        retiOverlaySvg.appendChild(line);
+    }
+
+    /* Resaltado verde de una casilla. */
+    function drawGreenSquare(file, rank) {
+        const p = squarePosition(file, rank);
+        const rect = document.createElementNS(ns, "rect");
+
+        rect.setAttribute("x", p.x);
+        rect.setAttribute("y", p.y);
+        rect.setAttribute("width", size);
+        rect.setAttribute("height", size);
+        rect.setAttribute("fill", "#4f9d5d");
+        rect.setAttribute("fill-opacity", "0.28");
+
+        retiOverlaySvg.appendChild(rect);
+    }
+
+    /* ---------------------------------------------------------
+       PRIMERA ANIMACIÓN — después de Kg7
+       --------------------------------------------------------- */
+    if (step === 1) {
+
+        /* Recuadro superior: b8-c7 */
+        drawOutline(1, 8, 2, 2);
+
+        /* Recuadro grande: d5-h1 */
+        drawOutline(3, 5, 5, 5);
+
+        /* Punto de partida y dirección de la ruta del rey. */
+        drawCircle(3, 6);
+        drawGreenArrow(3, 6, 7, 8);
+    }
+
+    /* ---------------------------------------------------------
+       SEGUNDA ANIMACIÓN — después de Kf4
+       --------------------------------------------------------- */
+    else if (step === finalStep) {
+
+        /* Recuadro inferior: f3-h1 */
+        drawOutline(5, 3, 3, 3);
+
+        /* Casillas destacadas: e5 y f4 */
+        drawGreenSquare(4, 5);
+        drawGreenSquare(5, 4);
     }
 }
 
