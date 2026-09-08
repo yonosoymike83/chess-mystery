@@ -269,18 +269,28 @@ async function loadPuzzle() {
         );
 
 
-    /* -----------------------------------------------------
-       Overlay de animaciones e indicador de jaque
-       ----------------------------------------------------- */
-
     createOverlay();
 
-    setTimeout(() => {
+    setTimeout(updateCheckSquare, 150);
 
-        updateAnimation();
-        updateCheckSquare();
+    /* -----------------------------------------------------
+       Animación opcional
+       ----------------------------------------------------- */
 
-    }, 150);
+    if (
+        hasAnimation("pawn-square") ||
+        hasAnimation("critical-squares")
+    ) {
+
+        createOverlay();
+
+        setTimeout(() => {
+
+            updateAnimation();
+
+        }, 150);
+
+    }
 
 }
 
@@ -334,6 +344,8 @@ function loadNextStage() {
         true
     );
 
+    setTimeout(updateCheckSquare, 80);
+
 
     /* -----------------------------------------------------
        Estado
@@ -365,10 +377,6 @@ function loadNextStage() {
             updateCheckSquare();
 
         }, 100);
-
-    } else {
-
-        setTimeout(updateCheckSquare, 100);
 
     }
 
@@ -426,6 +434,8 @@ function resetBoard() {
         game.fen()
     );
 
+    setTimeout(updateCheckSquare, 80);
+
 
     document.getElementById(
         "status"
@@ -458,8 +468,6 @@ function resetBoard() {
         updatePawnSquare();
 
     }
-
-    updateCheckSquare();
 
 }
 
@@ -496,6 +504,8 @@ function handleMove(event) {
             board.setPosition(
                 game.fen()
             );
+
+    setTimeout(updateCheckSquare, 80);
 
         }, 10);
 
@@ -560,6 +570,8 @@ function handleMove(event) {
             true
         );
 
+    setTimeout(updateCheckSquare, 80);
+
 
         /*
          * Actualizar animación
@@ -572,13 +584,8 @@ function handleMove(event) {
             setTimeout(() => {
 
                 updatePawnSquare();
-                updateCheckSquare();
 
             }, 50);
-
-        } else {
-
-            setTimeout(updateCheckSquare, 50);
 
         }
 
@@ -609,7 +616,6 @@ function handleMove(event) {
                     );
 
 
-                    hideCheckSquare();
                     solvePuzzle();
 
                 }, 350);
@@ -670,6 +676,8 @@ function handleMove(event) {
                 true
             );
 
+    setTimeout(updateCheckSquare, 80);
+
 
             currentStep++;
 
@@ -685,7 +693,6 @@ function handleMove(event) {
                 setTimeout(() => {
 
                     updatePawnSquare();
-                    updateCheckSquare();
 
                 }, 50);
 
@@ -800,6 +807,8 @@ function handleMove(event) {
             true
         );
 
+    setTimeout(updateCheckSquare, 80);
+
 
         /*
          * Actualizar animación
@@ -812,13 +821,8 @@ function handleMove(event) {
             setTimeout(() => {
 
                 updatePawnSquare();
-                updateCheckSquare();
 
             }, 50);
-
-        } else {
-
-            setTimeout(updateCheckSquare, 50);
 
         }
 
@@ -840,7 +844,6 @@ function handleMove(event) {
                 );
 
 
-                hideCheckSquare();
                 solvePuzzle();
 
             }, 350);
@@ -886,6 +889,8 @@ function handleMove(event) {
                 true
             );
 
+    setTimeout(updateCheckSquare, 80);
+
 
             currentStep++;
 
@@ -901,7 +906,6 @@ function handleMove(event) {
                 setTimeout(() => {
 
                     updatePawnSquare();
-                    updateCheckSquare();
 
                 }, 50);
 
@@ -925,7 +929,6 @@ function handleMove(event) {
                     );
 
 
-                    hideCheckSquare();
                     solvePuzzle();
 
                 }, 350);
@@ -968,8 +971,9 @@ function handleMove(event) {
             true
         );
 
+    setTimeout(updateCheckSquare, 80);
 
-        hideCheckSquare();
+
         solvePuzzle();
 
         return;
@@ -1222,12 +1226,7 @@ function createOverlay() {
 
     window.addEventListener(
         "resize",
-        () => {
-
-            updateAnimation();
-            updateCheckSquare();
-
-        }
+        updateAnimation
     );
 
 }
@@ -1471,6 +1470,65 @@ function squarePoint(
 /* =========================================================
    ACTUALIZAR CUADRADO
    ========================================================= */
+
+
+function getCheckedKingSquare() {
+    if (!game || !game.board || !game.turn) return null;
+
+    const inCheck = typeof game.isCheck === "function"
+        ? game.isCheck()
+        : typeof game.inCheck === "function"
+            ? game.inCheck()
+            : false;
+
+    if (!inCheck) return null;
+
+    const state = game.board();
+    const color = game.turn();
+
+    for (let rankIndex = 0; rankIndex < 8; rankIndex++) {
+        for (let fileIndex = 0; fileIndex < 8; fileIndex++) {
+            const piece = state[rankIndex][fileIndex];
+            if (piece && piece.type === "k" && piece.color === color) {
+                return { file: fileIndex, rank: 7 - rankIndex };
+            }
+        }
+    }
+    return null;
+}
+
+function updateCheckSquare() {
+    if (!overlaySvg || !board || !game) return;
+
+    const old = document.getElementById("checkKingOverlay");
+    if (old) old.remove();
+
+    const king = getCheckedKingSquare();
+    if (!king) return;
+
+    const boardRect = board.getBoundingClientRect();
+    const parentRect = board.parentElement.getBoundingClientRect();
+    const squareSize = boardRect.width / 8;
+    const point = squarePoint(king.file, king.rank, boardRect, parentRect);
+
+    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    rect.id = "checkKingOverlay";
+    rect.setAttribute("x", point.x + 2);
+    rect.setAttribute("y", point.y + 2);
+    rect.setAttribute("width", squareSize - 4);
+    rect.setAttribute("height", squareSize - 4);
+    rect.setAttribute("fill", "rgba(220,0,0,0.08)");
+    rect.setAttribute("stroke", "#d32f2f");
+    rect.setAttribute("stroke-width", "4");
+    rect.setAttribute("stroke-linejoin", "round");
+    overlaySvg.appendChild(rect);
+}
+
+function hideCheckSquare() {
+    const old = document.getElementById("checkKingOverlay");
+    if (old) old.remove();
+}
+
 
 function updatePawnSquare() {
 
@@ -1859,124 +1917,6 @@ function updateCriticalSquares() {
 
 
 /* =========================================================
-   INDICADOR DE JAQUE
-   ========================================================= */
-
-function getCheckedKingSquare() {
-
-    if (!game || !game.board) {
-        return null;
-    }
-
-    const inCheck =
-        typeof game.isCheck === "function"
-            ? game.isCheck()
-            : typeof game.inCheck === "function"
-                ? game.inCheck()
-                : false;
-
-    if (!inCheck) {
-        return null;
-    }
-
-    const color = game.turn();
-    const state = game.board();
-
-    for (let rankIndex = 0; rankIndex < 8; rankIndex++) {
-        for (let fileIndex = 0; fileIndex < 8; fileIndex++) {
-
-            const piece = state[rankIndex][fileIndex];
-
-            if (
-                piece &&
-                piece.type === "k" &&
-                piece.color === color
-            ) {
-                return {
-                    file: fileIndex,
-                    rank: 7 - rankIndex
-                };
-            }
-        }
-    }
-
-    return null;
-}
-
-
-function updateCheckSquare() {
-
-    if (!overlaySvg || !board || !game) {
-        return;
-    }
-
-    const previous =
-        overlaySvg.querySelector("#checkKingOverlay");
-
-    if (previous) {
-        previous.remove();
-    }
-
-    const king = getCheckedKingSquare();
-
-    if (!king) {
-        return;
-    }
-
-    const boardRect =
-        board.getBoundingClientRect();
-
-    const parentRect =
-        board.parentElement.getBoundingClientRect();
-
-    const squareSize =
-        boardRect.width / 8;
-
-    const point =
-        squarePoint(
-            king.file,
-            king.rank,
-            boardRect,
-            parentRect
-        );
-
-    const rect =
-        document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "rect"
-        );
-
-    rect.id = "checkKingOverlay";
-
-    rect.setAttribute("x", point.x + 2);
-    rect.setAttribute("y", point.y + 2);
-    rect.setAttribute("width", squareSize - 4);
-    rect.setAttribute("height", squareSize - 4);
-    rect.setAttribute("fill", "rgba(220,0,0,0.08)");
-    rect.setAttribute("stroke", "#d32f2f");
-    rect.setAttribute("stroke-width", "4");
-    rect.setAttribute("stroke-linejoin", "round");
-
-    overlaySvg.appendChild(rect);
-}
-
-
-function hideCheckSquare() {
-
-    if (!overlaySvg) {
-        return;
-    }
-
-    const rect =
-        overlaySvg.querySelector("#checkKingOverlay");
-
-    if (rect) {
-        rect.remove();
-    }
-}
-
-
-/* =========================================================
    OCULTAR CUADRADO
    ========================================================= */
 
@@ -2010,8 +1950,6 @@ window.addEventListener(
             updateAnimation();
 
         }
-
-        updateCheckSquare();
 
     }
 );
