@@ -1,0 +1,36 @@
+{
+  "title": {
+    "ca": "Philidor: la defensa",
+    "es": "Philidor: la defensa",
+    "en": "Philidor: The Defense"
+  },
+  "description": {
+    "ca": "Troba la defensa correcta i impedeix que el rei rival arribi a la sisena fila.",
+    "es": "Encuentra la defensa correcta e impide que el rey rival llegue a la sexta fila.",
+    "en": "Find the correct defense and prevent the opposing king from reaching the sixth rank."
+    {
+      "fen": "4k3/R7/8/3KP3/8/6r1/8/8 b - - 0 1",
+      "moves": [
+        "Rg5+",
+        "Kd6",
+        "Rg6+",
+        "Ke7",
+        "Rg7+",
+        "Kf8",
+        "Rg8+",
+        "Ke7",
+        "Rg7+",
+        "Kf8"
+      ]
+    }
+  ],
+  "solutionText": {
+    "ca": "La defensa de Philidor consisteix a mantenir la torre a la tercera fila mentre el rei rival encara no ha arribat a la sisena. Quan el peó avança, la torre pot donar escacs des de darrere i impedir la coronació.",
+    "es": "La defensa de Philidor consiste en mantener la torre en la tercera fila mientras el rey rival todavía no ha llegado a la sexta. Cuando el peón avanza, la torre puede dar jaques desde atrás e impedir la coronación.",
+    "en": "The Philidor defense consists of keeping the rook on the third rank while the opposing king has not yet reached the sixth. When the pawn advances, the rook can give checks from behind and prevent promotion."
+  },
+  "coordinates": {
+    "lat": "N 41° XX.XXX",
+    "lon": "E 002° XX.XXX"
+  }
+}
