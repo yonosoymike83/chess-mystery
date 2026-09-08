@@ -9,9 +9,7 @@
     "es": "Construye el puente y encuentra la forma de detener los jaques de la torre negra para conseguir la coronación.",
     "en": "Build the bridge and find a way to stop the black rook's checks and promote the pawn."
   },
-  "stages": [
-    {
-      "fen": "3K4/3P1k2/8/8/8/8/2r5/4R3 w - - 1 2",
+       "fen": "3K4/3P1k2/8/8/8/8/2r5/4R3 w - - 1 2",
       "moves": [
         "Rf1+",
         "Kg7",
