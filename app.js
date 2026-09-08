@@ -691,6 +691,10 @@ function handleMove(event) {
                 true
             );
 
+            // Actualizar el indicador también después de la jugada automática.
+            // Esto evita que un jaque quede marcado hasta la siguiente jugada del jugador.
+            updateCheckHighlight();
+
 
             currentStep++;
 
