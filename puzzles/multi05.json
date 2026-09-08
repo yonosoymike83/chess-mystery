@@ -1,7 +1,7 @@
 {
   "title": {
-    "ca": "Lucena: el pont",
-    "es": "Lucena: el puente",
+    "ca": "Lucena: el Pont",
+    "es": "Lucena: el Puente",
     "en": "Lucena: The Bridge"
   },
   "description": {
@@ -26,10 +26,10 @@
         "Rd4"
    ],
   "solutionText": {
-    "ca": "La idea de Lucena és construir un pont amb la torre perquè el rei quedi protegit dels escacs laterals. Primer, 1.Rf1+ talla el rei negre una columna més. Després de 1...Kg7, la jugada clau és 2.Rf4!: la torre es col·loca davant del rei i forma el pont. Si les negres intenten aturar la coronació amb escacs, el rei avança mentre la torre protegeix el seu camí. Després de 2...Rc1 3.Ke7 Re1+ 4.Kd6 Rd1+ 5.Ke6 Re1+ 6.Kd5 Rd1+ 7.Rd4+, els escacs ja no poden impedir la coronació.",
-    "es": "La idea de Lucena es construir un puente con la torre para que el rey quede protegido de los jaques laterales. Primero, 1.Rf1+ corta al rey negro una columna más. Después de 1...Kg7, la jugada clave es 2.Rf4!: la torre se coloca delante del rey y forma el puente. Si las negras intentan impedir la coronación mediante jaques, el rey avanza mientras la torre protege su camino. Después de 2...Rc1 3.Ke7 Re1+ 4.Kd6 Rd1+ 5.Ke6 Re1+ 6.Kd5 Rd1+ 7.Rd4+, los jaques ya no pueden impedir la coronación.",
-    "en": "The Lucena idea is to build a bridge with the rook so that the king is protected from lateral checks. First, 1.Rf1+ cuts the black king off by one more file. After 1...Kg7, the key move is 2.Rf4!: the rook moves in front of the king and forms the bridge. If Black tries to stop promotion with checks, the king advances while the rook protects its path. After 2...Rc1 3.Ke7 Re1+ 4.Kd6 Rd1+ 5.Ke6 Re1+ 6.Kd5 Rd1+ 7.Rd4+, the checks can no longer prevent promotion."
-  },
+    "ca": "La idea de Lucena és construir un pont amb la torre perquè el rei quedi protegit dels escacs laterals. Un cop creat aquest pont, el rei pot avançar amb seguretat mentre la torre impedeix que els escacs de la torre rival aturin la coronació.",
+    "es": "La idea de Lucena es construir un puente con la torre para que el rey quede protegido de los jaques laterales. Una vez creado el puente, el rey puede avanzar con seguridad mientras la torre impide que los jaques de la torre rival detengan la coronación.",
+    "en": "The Lucena idea is to build a bridge with the rook so that the king is protected from lateral checks. Once the bridge is built, the king can advance safely while the rook prevents the opposing rook's checks from stopping the promotion."
+}
   "coordinates": {
     "lat": "N 41° XX.XXX",
     "lon": "E 002° XX.XXX"
