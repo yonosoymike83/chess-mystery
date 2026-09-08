@@ -8,7 +8,7 @@
     "ca": "Troba la defensa correcta i impedeix que el rei rival arribi a la sisena fila.",
     "es": "Encuentra la defensa correcta e impide que el rey rival llegue a la sexta fila.",
     "en": "Find the correct defense and prevent the opposing king from reaching the sixth rank."
-    {
+  },
   "fen": "4k3/R7/8/3KP3/8/6r1/8/8 b - - 0 1",
   "moves": [
     "Rg6",
