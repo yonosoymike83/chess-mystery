@@ -577,3 +577,28 @@ body.darkcache-mode #copyBtn{
     }
 
 }
+/* ======================================================
+   PUZZLES — PC
+   Ajuste de tablero para mostrar el resultado sin scroll
+   NO afecta a DARK CACHE
+   ====================================================== */
+
+@media (min-width: 701px) {
+
+    body:not(.darkcache-mode) #board {
+
+        width:
+            min(
+                94vw,
+                62vh
+            );
+
+        height:
+            min(
+                94vw,
+                62vh
+            );
+
+    }
+
+}
