@@ -1161,6 +1161,7 @@ function copyCoords() {
 
 let overlay;
 let overlaySvg;
+let retiOverlaySvg;
 
 
 function createOverlay() {
@@ -1899,80 +1900,94 @@ function updateCriticalSquares() {
 
 
 /* =========================================================
+   OVERLAY DEDICADO PARA RÉTI
+   ========================================================= */
+
+function createRetiOverlay() {
+    if (retiOverlaySvg) return;
+
+    retiOverlaySvg = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg"
+    );
+
+    retiOverlaySvg.id = "retiOverlay";
+    retiOverlaySvg.style.position = "fixed";
+    retiOverlaySvg.style.pointerEvents = "none";
+    retiOverlaySvg.style.zIndex = "99999";
+    retiOverlaySvg.style.overflow = "visible";
+    retiOverlaySvg.style.display = "none";
+
+    document.body.appendChild(retiOverlaySvg);
+}
+
+function positionRetiOverlay() {
+    if (!retiOverlaySvg || !board) return null;
+
+    const r = board.getBoundingClientRect();
+    retiOverlaySvg.style.left = r.left + "px";
+    retiOverlaySvg.style.top = r.top + "px";
+    retiOverlaySvg.style.width = r.width + "px";
+    retiOverlaySvg.style.height = r.height + "px";
+    retiOverlaySvg.setAttribute("viewBox", `0 0 ${r.width} ${r.height}`);
+    return r;
+}
+
+function clearRetiOverlay() {
+    if (!retiOverlaySvg) return;
+    retiOverlaySvg.innerHTML = "";
+    retiOverlaySvg.style.display = "none";
+}
+
+/* =========================================================
    ANIMACIÓN DEL FINAL DE RÉTI
    ========================================================= */
 
 function updateRetiAnimation() {
-
-    if (!hasAnimation("reti") || !board || !overlaySvg || !game) {
+    if (!hasAnimation("reti") || !board || !game) {
+        clearRetiOverlay();
         return;
     }
 
+    createRetiOverlay();
+
     const stage = getCurrentStage();
-    if (!stage || !Array.isArray(stage.moves)) {
+    const moves = stage && Array.isArray(stage.moves) ? stage.moves : puzzle.moves;
+    if (!Array.isArray(moves)) {
+        clearRetiOverlay();
         return;
     }
 
     const step = currentStep;
-    const finalStep = stage.moves.length;
+    const finalStep = moves.length;
 
-    /* Antes de la primera jugada no mostramos nada. */
+    /* Nada antes de la primera jugada. */
     if (step < 1) {
-        overlaySvg.innerHTML = "";
+        clearRetiOverlay();
         return;
     }
 
-    const boardRect = board.getBoundingClientRect();
-    const parentRect = board.parentElement.getBoundingClientRect();
-
-    overlaySvg.innerHTML = "";
-
-    const ns = "http://www.w3.org/2000/svg";
-
-    /* -----------------------------------------------------
-       Flechas SVG
-       ----------------------------------------------------- */
-    const defs = document.createElementNS(ns, "defs");
-
-    const blueMarker = document.createElementNS(ns, "marker");
-    blueMarker.setAttribute("id", "retiBlueArrow");
-    blueMarker.setAttribute("viewBox", "0 0 10 10");
-    blueMarker.setAttribute("refX", "8");
-    blueMarker.setAttribute("refY", "5");
-    blueMarker.setAttribute("markerWidth", "7");
-    blueMarker.setAttribute("markerHeight", "7");
-    blueMarker.setAttribute("orient", "auto-start-reverse");
-
-    const bluePath = document.createElementNS(ns, "path");
-    bluePath.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
-    bluePath.setAttribute("fill", "#4169a1");
-    blueMarker.appendChild(bluePath);
-
-    const greenMarker = document.createElementNS(ns, "marker");
-    greenMarker.setAttribute("id", "retiGreenArrow");
-    greenMarker.setAttribute("viewBox", "0 0 10 10");
-    greenMarker.setAttribute("refX", "8");
-    greenMarker.setAttribute("refY", "5");
-    greenMarker.setAttribute("markerWidth", "7");
-    greenMarker.setAttribute("markerHeight", "7");
-    greenMarker.setAttribute("orient", "auto-start-reverse");
-
-    const greenPath = document.createElementNS(ns, "path");
-    greenPath.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
-    greenPath.setAttribute("fill", "#4f9d5d");
-    greenMarker.appendChild(greenPath);
-
-    defs.appendChild(blueMarker);
-    defs.appendChild(greenMarker);
-    overlaySvg.appendChild(defs);
-
-    function center(file, rank) {
-        const p = squarePoint(file, rank, boardRect, parentRect);
-        const size = boardRect.width / 8;
-        return { x: p.x + size / 2, y: p.y + size / 2 };
+    /* La primera animación solo vive después del primer movimiento. */
+    if (step >= 2 && step < finalStep) {
+        clearRetiOverlay();
+        return;
     }
 
-    function drawArrow(fromFile, fromRank, toFile, toRank, color, markerId, width) {
+    const boardRect = positionRetiOverlay();
+    if (!boardRect) return;
+
+    const ns = "http://www.w3.org/2000/svg";
+    retiOverlaySvg.innerHTML = "";
+    retiOverlaySvg.style.display = "block";
+
+    function center(file, rank) {
+        return {
+            x: (file + 0.5) * boardRect.width / 8,
+            y: (8 - rank - 0.5) * boardRect.height / 8
+        };
+    }
+
+    function drawArrow(fromFile, fromRank, toFile, toRank, color, markerId) {
         const a = center(fromFile, fromRank);
         const b = center(toFile, toRank);
         const line = document.createElementNS(ns, "line");
@@ -1981,84 +1996,83 @@ function updateRetiAnimation() {
         line.setAttribute("x2", b.x);
         line.setAttribute("y2", b.y);
         line.setAttribute("stroke", color);
-        line.setAttribute("stroke-width", width || "10");
+        line.setAttribute("stroke-width", Math.max(7, boardRect.width / 45));
         line.setAttribute("stroke-linecap", "round");
         line.setAttribute("marker-end", `url(#${markerId})`);
         line.setAttribute("opacity", "0.88");
-        overlaySvg.appendChild(line);
+        retiOverlaySvg.appendChild(line);
     }
 
     function drawCircle(file, rank, color) {
         const p = center(file, rank);
-        const size = boardRect.width / 8;
         const circle = document.createElementNS(ns, "circle");
         circle.setAttribute("cx", p.x);
         circle.setAttribute("cy", p.y);
-        circle.setAttribute("r", size * 0.34);
+        circle.setAttribute("r", boardRect.width / 8 * 0.34);
         circle.setAttribute("fill", "none");
         circle.setAttribute("stroke", color);
-        circle.setAttribute("stroke-width", "5");
+        circle.setAttribute("stroke-width", Math.max(4, boardRect.width / 90));
         circle.setAttribute("opacity", "0.9");
-        overlaySvg.appendChild(circle);
+        retiOverlaySvg.appendChild(circle);
     }
 
     function drawSquare(file, rank, color) {
-        const p = squarePoint(file, rank, boardRect, parentRect);
         const size = boardRect.width / 8;
         const rect = document.createElementNS(ns, "rect");
-        rect.setAttribute("x", p.x);
-        rect.setAttribute("y", p.y);
+        rect.setAttribute("x", file * size);
+        rect.setAttribute("y", (8 - rank - 1) * size);
         rect.setAttribute("width", size);
         rect.setAttribute("height", size);
         rect.setAttribute("fill", color);
         rect.setAttribute("fill-opacity", "0.28");
-        overlaySvg.appendChild(rect);
+        retiOverlaySvg.appendChild(rect);
     }
+
+    const defs = document.createElementNS(ns, "defs");
+    function marker(id, color) {
+        const m = document.createElementNS(ns, "marker");
+        m.setAttribute("id", id);
+        m.setAttribute("viewBox", "0 0 10 10");
+        m.setAttribute("refX", "8");
+        m.setAttribute("refY", "5");
+        m.setAttribute("markerWidth", "7");
+        m.setAttribute("markerHeight", "7");
+        m.setAttribute("orient", "auto");
+        const p = document.createElementNS(ns, "path");
+        p.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
+        p.setAttribute("fill", color);
+        m.appendChild(p);
+        defs.appendChild(m);
+    }
+    marker("retiBlueArrow", "#4169a1");
+    marker("retiGreenArrow", "#4f9d5d");
+    retiOverlaySvg.appendChild(defs);
 
     const blue = "#4169a1";
     const green = "#4f9d5d";
 
-    if (step >= 2 && step < finalStep) {
-        /* La primera animación desaparece justo después del segundo movimiento. */
-        overlaySvg.innerHTML = "";
-        overlaySvg.style.opacity = "0";
-        return;
-    }
-
     if (step < finalStep) {
-
-        /* Ruta diagonal del rey: h8-g7-f6-e5-d6. */
-        drawArrow(7, 8, 6, 7, green, "retiGreenArrow", 10);
-        drawArrow(6, 7, 5, 6, green, "retiGreenArrow", 10);
-        drawArrow(5, 6, 4, 5, green, "retiGreenArrow", 10);
-        drawArrow(4, 5, 3, 6, green, "retiGreenArrow", 10);
+        drawArrow(7, 8, 6, 7, green, "retiGreenArrow");
+        drawArrow(6, 7, 5, 6, green, "retiGreenArrow");
+        drawArrow(5, 6, 4, 5, green, "retiGreenArrow");
+        drawArrow(4, 5, 3, 6, green, "retiGreenArrow");
         drawCircle(3, 6, green);
 
-        /* Ruta del peón negro alrededor del tablero. */
-        drawArrow(7, 5, 4, 5, blue, "retiBlueArrow", 10);
-        drawArrow(4, 5, 4, 1, blue, "retiBlueArrow", 10);
-        drawArrow(4, 1, 7, 1, blue, "retiBlueArrow", 10);
-        drawArrow(7, 1, 7, 5, blue, "retiBlueArrow", 10);
-
-        /* Pequeño ciclo defensivo del rey negro. */
-        drawArrow(1, 7, 2, 8, blue, "retiBlueArrow", 10);
-        drawArrow(2, 8, 1, 7, blue, "retiBlueArrow", 10);
-
+        drawArrow(7, 5, 4, 5, blue, "retiBlueArrow");
+        drawArrow(4, 5, 4, 1, blue, "retiBlueArrow");
+        drawArrow(4, 1, 7, 1, blue, "retiBlueArrow");
+        drawArrow(7, 1, 7, 5, blue, "retiBlueArrow");
+        drawArrow(1, 7, 2, 8, blue, "retiBlueArrow");
+        drawArrow(2, 8, 1, 7, blue, "retiBlueArrow");
     } else {
-
-        /* Tras la última jugada: casillas clave del rey. */
-        drawSquare(4, 5, green); // e5
-        drawSquare(5, 4, green); // f4
-
-        /* Ruta final del peón negro. */
-        drawArrow(7, 4, 7, 1, blue, "retiBlueArrow", 10);
-        drawArrow(7, 1, 5, 1, blue, "retiBlueArrow", 10);
-        drawArrow(5, 1, 5, 3, blue, "retiBlueArrow", 10);
-        drawArrow(5, 3, 7, 3, blue, "retiBlueArrow", 10);
-        drawArrow(7, 3, 7, 4, blue, "retiBlueArrow", 10);
+        drawSquare(4, 5, green);
+        drawSquare(5, 4, green);
+        drawArrow(7, 4, 7, 1, blue, "retiBlueArrow");
+        drawArrow(7, 1, 5, 1, blue, "retiBlueArrow");
+        drawArrow(5, 1, 5, 3, blue, "retiBlueArrow");
+        drawArrow(5, 3, 7, 3, blue, "retiBlueArrow");
+        drawArrow(7, 3, 7, 4, blue, "retiBlueArrow");
     }
-
-    overlaySvg.style.opacity = "1";
 }
 
 
@@ -2095,6 +2109,7 @@ window.addEventListener(
         ) {
 
             updateAnimation();
+            if (hasAnimation("reti")) updateRetiAnimation();
 
         }
 
