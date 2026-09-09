@@ -2039,9 +2039,9 @@ function updateRetiAnimation() {
      * al final, en d6.
      */
     function drawGreenRetiPath() {
-        const a = squareCenter(6, 7); // g7
-        const b = squareCenter(4, 5); // e5
-        const c = squareCenter(3, 6); // d6
+        const a = squareCenter(6, 6); // g6
+        const b = squareCenter(4, 4); // e4
+        const c = squareCenter(3, 5); // d5
 
         const defs = document.createElementNS(ns, "defs");
         const marker = document.createElementNS(ns, "marker");
@@ -2063,7 +2063,7 @@ function updateRetiAnimation() {
         defs.appendChild(marker);
         retiOverlaySvg.appendChild(defs);
 
-        /* La línea termina antes del centro de d6 para dejar visible el círculo. */
+        /* La línea termina antes del centro de d5 para dejar visible el círculo. */
         const dx = c.x - b.x;
         const dy = c.y - b.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
