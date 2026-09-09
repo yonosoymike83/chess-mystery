@@ -9,7 +9,7 @@
     "es": "Encuentra el camino del rey para llegar a tiempo a los dos peones.",
     "en": "Find the king's route to reach both pawns in time."
   },
-      "fen": "7K/8/k1P5/7p/8/8/8/8 w - - 0 1",
+      "fen": "8/8/8/8/4k3/8/6K1/6BN w - - 0 1",
       "moves": [
         "Kg7",
         "h4",
