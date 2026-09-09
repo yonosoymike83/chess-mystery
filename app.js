@@ -2033,10 +2033,15 @@ function updateRetiAnimation() {
         retiOverlaySvg.appendChild(circle);
     }
 
-    /* Una sola flecha verde, con una única punta al final. */
-    function drawGreenArrow(fromFile, fromRank, toFile, toRank) {
-        const a = squareCenter(fromFile, fromRank);
-        const b = squareCenter(toFile, toRank);
+    /*
+     * Ruta verde de Réti: g7 → e5 → d6.
+     * Una sola línea continua y una única punta de flecha
+     * al final, en d6.
+     */
+    function drawGreenRetiPath() {
+        const a = squareCenter(6, 7); // g7
+        const b = squareCenter(4, 5); // e5
+        const c = squareCenter(3, 6); // d6
 
         const defs = document.createElementNS(ns, "defs");
         const marker = document.createElementNS(ns, "marker");
@@ -2058,25 +2063,26 @@ function updateRetiAnimation() {
         defs.appendChild(marker);
         retiOverlaySvg.appendChild(defs);
 
-        const dx = b.x - a.x;
-        const dy = b.y - a.y;
+        /* La línea termina antes del centro de d6 para dejar visible el círculo. */
+        const dx = c.x - b.x;
+        const dy = c.y - b.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        const offsetStart = size * 0.30;
-        const offsetEnd = size * 0.34;
+        const endOffset = size * 0.34;
 
-        const line = document.createElementNS(ns, "line");
+        const path = document.createElementNS(ns, "polyline");
+        path.setAttribute(
+            "points",
+            `${a.x},${a.y} ${b.x},${b.y} ${c.x - dx / distance * endOffset},${c.y - dy / distance * endOffset}`
+        );
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke", "#4f9d5d");
+        path.setAttribute("stroke-width", Math.max(2.5, boardRect.width / 180));
+        path.setAttribute("stroke-linecap", "round");
+        path.setAttribute("stroke-linejoin", "round");
+        path.setAttribute("marker-end", "url(#retiGreenArrow)");
+        path.setAttribute("opacity", "0.72");
 
-        line.setAttribute("x1", a.x + dx / distance * offsetStart);
-        line.setAttribute("y1", a.y + dy / distance * offsetStart);
-        line.setAttribute("x2", b.x - dx / distance * offsetEnd);
-        line.setAttribute("y2", b.y - dy / distance * offsetEnd);
-        line.setAttribute("stroke", "#4f9d5d");
-        line.setAttribute("stroke-width", Math.max(2.5, boardRect.width / 180));
-        line.setAttribute("stroke-linecap", "round");
-        line.setAttribute("marker-end", "url(#retiGreenArrow)");
-        line.setAttribute("opacity", "0.72");
-
-        retiOverlaySvg.appendChild(line);
+        retiOverlaySvg.appendChild(path);
     }
 
     /* ---------------------------------------------------------
@@ -2092,7 +2098,7 @@ function updateRetiAnimation() {
 
         /* Punto de partida y dirección de la ruta del rey. */
         drawCircle(3, 6);
-        drawGreenArrow(7, 8, 3, 6);
+        drawGreenRetiPath();
     }
 
     /* ---------------------------------------------------------
