@@ -2017,21 +2017,6 @@ function updateRetiAnimation() {
         retiOverlaySvg.appendChild(rect);
     }
 
-    /* Círculo verde de la posición inicial de la ruta. */
-    function drawCircle(file, rank) {
-        const p = squareCenter(file, rank);
-        const circle = document.createElementNS(ns, "circle");
-
-        circle.setAttribute("cx", p.x);
-        circle.setAttribute("cy", p.y);
-        circle.setAttribute("r", size * 0.34);
-        circle.setAttribute("fill", "none");
-        circle.setAttribute("stroke", "#4f9d5d");
-        circle.setAttribute("stroke-width", Math.max(2, boardRect.width / 150));
-        circle.setAttribute("opacity", "0.72");
-
-        retiOverlaySvg.appendChild(circle);
-    }
 
     /*
      * Ruta verde de Réti: g7 → e5 → d6.
@@ -2096,8 +2081,7 @@ function updateRetiAnimation() {
         /* Recuadro grande: d5-h1 */
         drawOutline(3, 5, 5, 5);
 
-        /* Punto de partida y dirección de la ruta del rey. */
-        drawCircle(3, 6);
+        /* Ruta verde de la posición. */
         drawGreenRetiPath();
     }
 
