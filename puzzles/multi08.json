@@ -5,9 +5,9 @@
     "en": "Bishop & Knight Checkmate"
   },
   "description": {
-    "ca": "Troba el camí del rei per arribar a temps als dos peons.",
-    "es": "Encuentra el camino del rey para llegar a tiempo a los dos peones.",
-    "en": "Find the king's route to reach both pawns in time."
+    "ca": "Coordina l'alfil, el cavall i el rei per conduir el rei rival fins a la cantonada i aconseguir el mat.",
+    "es": "Coordina el alfil, el caballo y el rey para llevar al rey rival hasta la esquina y conseguir el mate.",
+    "en": "Coordinate the bishop, knight and king to drive the opposing king to the corner and deliver checkmate."
   },
       "fen": "8/8/8/8/4k3/8/6K1/6BN w - - 0 1",
       "moves": [
@@ -81,9 +81,9 @@
                 
   ],
   "solutionText": {
-    "ca": "El final de Réti demostra que el rei pot arribar a temps a dos objectius molt allunyats si avança per una diagonal. La clau és combinar l'amenaça sobre el peó rival amb l'avanç cap al teu propi peó.",
-    "es": "El final de Réti demuestra que el rey puede llegar a tiempo a dos objetivos muy alejados si avanza por una diagonal. La clave es combinar la amenaza sobre el peón rival con el avance hacia tu propio peón.",
-    "en": "The Réti endgame shows that a king can reach two distant objectives in time by advancing along a diagonal. The key is to combine the threat against the opposing pawn with progress towards your own pawn."
+    "ca": "El mat d'alfil i cavall requereix coordinar les tres peces per anar reduint progressivament l'espai del rei rival. El rei controla les caselles de fugida, mentre l'alfil i el cavall formen una xarxa que condueix el rei fins a una cantonada, on es pot completar el mat.",
+    "es": "El mate de alfil y caballo requiere coordinar las tres piezas para ir reduciendo progresivamente el espacio del rey rival. El rey controla las casillas de escape, mientras el alfil y el caballo forman una red que conduce al rey hasta una esquina, donde se puede completar el mate.",
+    "en": "Bishop and knight checkmate requires coordinating all three pieces to progressively restrict the opposing king's space. The king controls the escape squares, while the bishop and knight form a net that drives the king towards a corner, where the checkmate can be completed."
   },
   "coordinates": {
     "lat": "N 41° XX.XXX",
