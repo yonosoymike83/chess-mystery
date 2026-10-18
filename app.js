@@ -501,12 +501,34 @@ function handleMove(event) {
         event.detail.target;
 
 
-    const move =
-        game.move({
-            from: from,
-            to: to,
-            promotion: "q"
-        });
+    // Si un peón llega a la última fila, permite elegir la pieza de promoción.
+    // Esto es importante para puzzles como Àlvar Alonso, donde solo vale g8=N+.
+    let promotion = "q";
+    const movingPiece = game.get(from);
+    const promotes = movingPiece && movingPiece.type === "p" &&
+        ((movingPiece.color === "w" && to[1] === "8") ||
+         (movingPiece.color === "b" && to[1] === "1"));
+
+    if (promotes) {
+        const choice = window.prompt(
+            "Promoción: escribe q (dama), r (torre), b (alfil) o n (caballo).",
+            "q"
+        );
+
+        // Si cancela o introduce una opción inválida, devolver la pieza a su casilla.
+        if (choice === null || !["q", "r", "b", "n"].includes(choice.trim().toLowerCase())) {
+            setTimeout(() => board.setPosition(game.fen(), true), 10);
+            return;
+        }
+
+        promotion = choice.trim().toLowerCase();
+    }
+
+    const move = game.move({
+        from: from,
+        to: to,
+        promotion: promotion
+    });
 
 
     /* -----------------------------------------------------
