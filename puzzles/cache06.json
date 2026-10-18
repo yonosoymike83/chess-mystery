@@ -1,0 +1,48 @@
+{
+  "id": "cache05",
+  "title": {
+    "ca": "Grans Mestres Catalans #02",
+    "es": "Grandes Maestros Catalanes #02",
+    "en": "Catalan Grandmasters #02"
+  },
+  "description": {
+    "ca": "Les blanques juguen i han de trobar la combinació guanyadora.",
+    "es": "Las blancas juegan y deben encontrar la combinación ganadora.",
+    "en": "White to move and find the winning combination."
+  },
+  "fen": "2brq1k1/1p1n1pPp/3pp1pQ/2p5/p2PP2N/2P3P1/5RBP/5RK1 w - - 0 23",
+ "moves": [
+  "Nxg6",
+  "a3",
+  "Rxf7",
+  "Qxf7",
+  "Rxf7",
+  "Kxf7",
+  "Qxh7",
+  "Kf6",
+  "e5+",
+  "dxe5",
+  "g8=N+",
+  "Rxg8",
+  "Qe7+",
+  "Kf5",
+  "Nh4+",
+  "Kg4",
+  "Bf3+",
+  "Kh3",
+  "Qxe6+",
+  "Rg4",
+  "Bg2#"
+]
+
+    "solutionText": {
+    "ca": "La combinació pertany a la partida disputada entre el gran mestre català Àlvar Alonso i J. C. Ibarra el 12 de juny de 2023. La partida es va jugar durant el Play-In de l'Aimchess Rapid, una competició en línia d'escacs ràpids disputada a través de Chess.com. ",
+    "es": "La combinación pertenece a la partida disputada entre el gran maestro catalán Àlvar Alonso y J. C. Ibarra el 12 de junio de 2023. La partida se jugó durante el Play-In del Aimchess Rapid, una competición de ajedrez rápido en línea disputada a través de Chess.com.",
+    "en": "The combination comes from the game played between Catalan Grandmaster Àlvar Alonso and J. C. Ibarra on June 12, 2023. The game was played during the Aimchess Rapid Play-In, an online rapid chess competition held on Chess.com."
+  },
+
+  "coordinates": {
+    "lat": "N 41° 40.159",
+    "lon": "E 002° 46.562"
+  }
+}
