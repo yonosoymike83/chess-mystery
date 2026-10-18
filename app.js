@@ -489,41 +489,93 @@ function resetBoard() {
 
 
 /* =========================================================
+   SELECCIÓN VISUAL DE PROMOCIÓN
+   ========================================================= */
+
+function choosePromotion(color) {
+    return new Promise((resolve) => {
+        const symbols = color === "w"
+            ? { q: "♕", r: "♖", b: "♗", n: "♘" }
+            : { q: "♛", r: "♜", b: "♝", n: "♞" };
+
+        if (!document.getElementById("promotion-modal-styles")) {
+            const style = document.createElement("style");
+            style.id = "promotion-modal-styles";
+            style.textContent = `
+                .promotion-backdrop{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.82);animation:promotionFadeIn .14s ease-out}
+                .promotion-dialog{box-sizing:border-box;width:min(100%,430px);padding:16px;border:1px solid #292929;border-radius:20px;background:#111;color:#fff;box-shadow:0 18px 55px rgba(0,0,0,.45);font-family:inherit}
+                .promotion-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+                .promotion-option{display:flex;align-items:center;justify-content:center;min-width:0;aspect-ratio:1/1;padding:5px;border:1px solid #292929;border-radius:15px;background:#222;color:#fff;font:inherit;cursor:pointer;transition:background .12s ease,transform .12s ease;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+                .promotion-option:hover,.promotion-option:focus-visible{background:#303030;transform:translateY(-1px);outline:1px solid #666;outline-offset:1px}
+                .promotion-piece{display:block;font-family:"DejaVu Sans","Segoe UI Symbol",serif;font-size:clamp(37px,10vw,53px);line-height:1;color:#fff}
+                @keyframes promotionFadeIn{from{opacity:0}to{opacity:1}}
+                @media(max-width:360px){.promotion-dialog{padding:11px}.promotion-options{gap:7px}.promotion-option{border-radius:12px}.promotion-piece{font-size:36px}}
+                @media(prefers-reduced-motion:reduce){.promotion-backdrop{animation:none}.promotion-option{transition:none}}
+            `;
+            document.head.appendChild(style);
+        }
+
+        const backdrop = document.createElement("div");
+        backdrop.className = "promotion-backdrop";
+        backdrop.setAttribute("role", "presentation");
+        backdrop.innerHTML = `
+            <section class="promotion-dialog" role="dialog" aria-modal="true" aria-label="Promotion">
+                <div class="promotion-options">
+                    <button type="button" class="promotion-option" data-piece="q" aria-label="Queen"><span class="promotion-piece">${symbols.q}</span></button>
+                    <button type="button" class="promotion-option" data-piece="r" aria-label="Rook"><span class="promotion-piece">${symbols.r}</span></button>
+                    <button type="button" class="promotion-option" data-piece="b" aria-label="Bishop"><span class="promotion-piece">${symbols.b}</span></button>
+                    <button type="button" class="promotion-option" data-piece="n" aria-label="Knight"><span class="promotion-piece">${symbols.n}</span></button>
+                </div>
+            </section>`;
+
+        const finish = (choice) => {
+            if (!backdrop.isConnected) return;
+            document.removeEventListener("keydown", onKeyDown);
+            backdrop.remove();
+            resolve(choice);
+        };
+        const onKeyDown = (event) => {
+            if (event.key === "Escape") finish(null);
+        };
+        backdrop.addEventListener("click", (event) => {
+            if (event.target === backdrop) finish(null);
+        });
+        backdrop.querySelectorAll("[data-piece]").forEach((button) => {
+            button.addEventListener("click", () => finish(button.dataset.piece));
+        });
+        document.addEventListener("keydown", onKeyDown);
+        document.body.appendChild(backdrop);
+        backdrop.querySelector('[data-piece="q"]').focus({ preventScroll: true });
+    });
+}
+
+/* =========================================================
    MANEJAR MOVIMIENTO
    ========================================================= */
 
 function handleMove(event) {
-
-    const from =
-        event.detail.source;
-
-    const to =
-        event.detail.target;
-
-
-    // Si un peón llega a la última fila, permite elegir la pieza de promoción.
-    // Esto es importante para puzzles como Àlvar Alonso, donde solo vale g8=N+.
-    let promotion = "q";
+    const from = event.detail.source;
+    const to = event.detail.target;
     const movingPiece = game.get(from);
     const promotes = movingPiece && movingPiece.type === "p" &&
         ((movingPiece.color === "w" && to[1] === "8") ||
          (movingPiece.color === "b" && to[1] === "1"));
 
     if (promotes) {
-        const choice = window.prompt(
-            "Promoción: escribe q (dama), r (torre), b (alfil) o n (caballo).",
-            "q"
-        );
-
-        // Si cancela o introduce una opción inválida, devolver la pieza a su casilla.
-        if (choice === null || !["q", "r", "b", "n"].includes(choice.trim().toLowerCase())) {
-            setTimeout(() => board.setPosition(game.fen(), true), 10);
-            return;
-        }
-
-        promotion = choice.trim().toLowerCase();
+        choosePromotion(movingPiece.color).then((promotion) => {
+            if (!promotion) {
+                setTimeout(() => board.setPosition(game.fen(), true), 10);
+                return;
+            }
+            applyMove(from, to, promotion);
+        });
+        return;
     }
 
+    applyMove(from, to, "q");
+}
+
+function applyMove(from, to, promotion) {
     const move = game.move({
         from: from,
         to: to,
